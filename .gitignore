@@ -133,3 +133,4 @@ secrets*
 *.csv
 *.xlsx
 config.ini
+.DS_Store
