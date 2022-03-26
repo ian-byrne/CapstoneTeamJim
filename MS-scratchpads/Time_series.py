@@ -22,6 +22,7 @@ from statsmodels.tsa.stattools import acf, pacf
 from statsmodels.tsa.api import VAR
 from statsmodels.tsa.vector_ar.var_model import VARResults, VARResultsWrapper
 from statsmodels.tools.eval_measures import rmse, aic
+from statsmodels.tsa.stattools import grangercausalitytests
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import KNNImputer
@@ -233,19 +234,20 @@ missing_vals['recent_pct'] = missing_vals['recent_missing']/36*100
 
 missing_vals['to_filter'] = 1
 # missing_vals['to_filter'][((missing_vals['missing_pct']<30)|(missing_vals['recent_pct']<30))]=0
-missing_vals['to_filter'][((missing_vals['missing_pct']<10)|(missing_vals['recent_pct']<10))]=0
+# missing_vals['to_filter'][((missing_vals['missing_pct']<10)|(missing_vals['recent_pct']<10))]=0
+missing_vals['to_filter'][((missing_vals['recent_pct']<10))]=0
 missing_counties = missing_vals[missing_vals['to_filter']==1]['county_fips'].to_list()
 len(missing_counties)
 # dropping 348 counties with 30:30
 # dropping 433 counties with 10:10
+# dropping 438 counties with recent vals <10
 
+# remove counties with sparse data and fill forward na for median sale price
 df = df[~df['county_fips'].isin(missing_counties)]
 df['median_sale_price'] = df.groupby('county_fips')['median_sale_price'].transform(lambda v: v.ffill()).fillna(0)
 
 # split training and testing data and pivot so counties are columns
 df_time = df[df['year']!='2021']
-
-
 df_time = df_time.pivot(index='date',columns='county_fips',values='median_sale_price')
 
 
@@ -272,7 +274,8 @@ adf = adf.melt()
 adf.columns=['county_fips','no_diff_p']
 adf[adf['no_diff_p']<0.05].count()
 # 376/1512 are stationary - with 30:30 dropped counties
-# 308/1512 are stationary- with 10:10 dropped counties
+# 308/1427 are stationary- with 10:10 dropped counties
+# 304/1422 are stationary- with recent vals <10
 
 # check stationarity with ad fuller testing - first differencing
 df_time_diff = df_time.diff().dropna()
@@ -280,14 +283,18 @@ first_diff = adfuller_func(df_time_diff)
 adf['first_diff_p'] = first_diff 
 adf[adf['first_diff_p']<0.05].count()
 # 1404/1512 are stationary - with 30:30 dropped counties
-# 1319/1512 are stationary- with 10:10 dropped counties
+# 1319/1427 are stationary- with 10:10 dropped counties
+# 1314/1422  are stationary- with recent vals <10
 
 df_time_2diff = df_time_diff.diff().dropna()
 sec_diff = adfuller_func(df_time_2diff)
 adf['sec_diff_p'] = sec_diff 
 adf[adf['sec_diff_p']<0.05].count()
 # 1512/1512 are stationary - with 30:30 dropped counties
-# 1427/1512 are stationary- with 10:10 dropped counties
+# 1427/1427 are stationary- with 10:10 dropped counties
+# 1422/1422 are stationary- with recent vals <10
+
+
 
 # df = hpi[hpi['year']!='2020']
 # d2020 = hpi[hpi['year']=='2020']
@@ -304,7 +311,7 @@ adf[adf['sec_diff_p']<0.05].count()
 # df = df.drop(columns=missing_cols)
 # d2020 = d2020.drop(columns=missing_cols)
 
-p=2
+p=12
 
 num_forecasts = 12
 var_res, forecasts = None, None
@@ -341,15 +348,56 @@ df2021 = df2021.pivot(index='date',columns='county_fips',values='median_sale_pri
 rmse_calc = np.sqrt(np.mean((df2021 - for_df) ** 2, axis=0)).round(0)
 rmse_calc = rmse_calc.reset_index()
 rmse_calc.columns = ['county_fips','rmse']
+mean_for_error = df2021 - for_df
+mean_for_error = (mean_for_error.melt().groupby('county_fips')['value'].sum()/num_forecasts).reset_index()
+rmse_calc = rmse_calc.merge(mean_for_error, on=['county_fips'])
+rmse_calc.columns = ['county_fips','rmse','mean_forcast_error']
 county_mean = pred.groupby('county_fips')['median_sale_price'].mean()
 rmse_calc = rmse_calc.merge(county_mean, on=['county_fips'])
-rmse_calc.columns = ['county_fips','rmse','mean_med_sale_by_county']
+rmse_calc.columns = ['county_fips','rmse','mean_forcast_error','mean_med_sale_by_county']
 rmse_calc['error_magnitude'] = rmse_calc['rmse']/rmse_calc['mean_med_sale_by_county']*100
 
 pred = pred.merge(rmse_calc,how='left',on='county_fips')
-pred=pred.sort_values(by='error_magnitude')
-#%%
+pred=pred.sort_values(by=['county_fips','date'])
+# pred=pred.sort_values(by='error_magnitude')
+#%% Granger Causality checks
+# from tqdm import tqdm
+# df_gran_test = df.pivot(index='date',columns='county_fips',values='median_sale_price')
+# counties = list(df_gran_test.columns)
+# test = 'ssr_chi2test'
+# granger_df = pd.DataFrame(data=None, columns = counties, index = counties)
 
+# for i in tqdm(counties):
+#     for j in counties:
+#         if i!=j:
+#             test_result = grangercausalitytests(df_gran_test[[i, j]], maxlag=p, verbose=False)
+#             p_values = [round(test_result[i+1][0][test][1],4) for i in range(p)]
+#             min_p_value = np.min(p_values)
+#             granger_df.loc[i,j] = min_p_value
+            
+# granger_df.astype(float)
+
+#Takes about 4.5 hours to run.  It can be seen that there are several series that have causality to other time series.
+
+#%%
+# from statsmodels.tsa.vector_ar.vecm import coint_johansen
+
+
+# def cointegration_test(df, alpha=0.05): 
+#     """Perform Johanson's Cointegration Test and Report Summary"""
+#     out = coint_johansen(df,-1,2)
+#     d = {'0.90':0, '0.95':1, '0.99':2}
+#     traces = out.lr1
+#     cvts = out.cvt[:, d[str(1-alpha)]]
+#     def adjust(val, length= 6): return str(val).ljust(length)
+
+#     # Summary
+#     print('Name   ::  Test Stat > C(95%)    =>   Signif  \n', '--'*20)
+#     for col, trace, cvt in zip(df.columns, traces, cvts):
+#         print(adjust(col), ':: ', adjust(round(trace,2), 9), ">", adjust(cvt, 8), ' =>  ' , trace > cvt)
+# df_coint = df.pivot(index='date',columns='county_fips',values='median_sale_price')
+
+# cointegration_test(df_coint.iloc[:,0:5])
 
 #%%
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
@@ -368,13 +416,14 @@ fig.show()
 
 
 #####  How many counties are predicting median sale price <0 as a function of max_lags value?  
-pred[pred['Pred_median_sale_price']<0]['county_fips'].nunique()
+pred[pred['Pred_median_sale_price']<0]['county_fips'].unique()
 # p=3
 #negative predictions counties (count=81)
 
 # p=2
 #negative predictions counties (count=18) with 30:30 dropped counties
 #negative predictions counties (count=2) with 10:10 dropped counties
+# '18041', '51119'
 
 # p=1
 #negative predictions counties (count=24)
@@ -383,7 +432,7 @@ pred[pred['Pred_median_sale_price']<0]['county_fips'].nunique()
 #negative predictions counties (count=54)
 
 ####  Setting max_lags to 2, how many counties have error magnitude >50% of median sale price?
-pred[pred['error_magnitude']>50]['county_fips'].unique()
+pred[pred['error_magnitude']>50]['county_fips'].nunique()
 # counties with high error (>50% of median sale price) (count=109)  with 30:30 dropped counties
 # '47007', '05149', '21181', '40079', '39157', '40063', '05061',
 #    '51115', '28163', '48255', '27073', '48175', '13279', '19009',
@@ -408,6 +457,12 @@ pred[pred['error_magnitude']>50]['county_fips'].unique()
 #    '13127', '31095', '19009', '05121', '21077', '12079', '27081',
 #    '19129', '48237', '40005', '05079', '13191', '13095', '40035',
 #    '13235', '29061', '51119', '17013', '18041'
+# counties with high error (>50% of median sale price) (count=40)  with >10 recent missing dropped counties
+# '05079', '05121', '12079', '13095', '13109', '13165', '13191',
+#        '13235', '17013', '18177', '19009', '19129', '21023', '21077',
+#        '21175', '21181', '29061', '31095', '40005', '40035', '40063',
+#        '40107', '45041', '45071', '45087', '47181', '48083', '48207',
+#        '48333', '51119', '55041'
 
 
 ####  CHECK OUTLIERS    #####
@@ -430,6 +485,11 @@ m48171 = missing_vals[missing_vals['county_fips']=='48171']
 d48353 = base[base.county_fips=='48353']
 m48353 = missing_vals[missing_vals['county_fips']=='48353']
 #missing% = 24%; recent% = 11%
+
+# 51119
+d51119 = base[base.county_fips=='51119']
+m51119 = missing_vals[missing_vals['county_fips']=='51119']
+#missing% = 9%; recent% = 2%
 
 
 # 25025
