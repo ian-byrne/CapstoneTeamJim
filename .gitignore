@@ -131,6 +131,7 @@ dmypy.json
 # Additional
 secrets*
 *.csv
+*.pkl
 *.xlsx
 config.ini
 .DS_Store
