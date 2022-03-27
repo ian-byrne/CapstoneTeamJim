@@ -134,3 +134,4 @@ secrets*
 *.xlsx
 config.ini
 .DS_Store
+.vscode/
