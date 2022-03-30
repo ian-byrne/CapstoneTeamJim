@@ -135,3 +135,4 @@ secrets*
 *.xlsx
 config.ini
 .DS_Store
+iframe_figures/
