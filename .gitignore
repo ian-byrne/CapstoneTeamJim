@@ -131,7 +131,10 @@ dmypy.json
 # Additional
 secrets*
 *.csv
+*.pkl
 *.xlsx
 config.ini
 .DS_Store
 .vscode/
+iframe_figures/
+images/
