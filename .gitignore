@@ -132,6 +132,8 @@ dmypy.json
 secrets*
 *.csv
 *.pkl
+!/src/data/dataraw_2019.pkl
+!/src/data/dataraw_to2018.pkl
 *.xlsx
 config.ini
 .DS_Store
