@@ -140,3 +140,5 @@ config.ini
 .vscode/
 iframe_figures/
 images/
+optuna_test/
+lightning_logs/
