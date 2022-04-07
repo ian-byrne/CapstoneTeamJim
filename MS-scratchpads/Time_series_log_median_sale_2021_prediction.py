@@ -6,7 +6,8 @@ Created on Wed Mar 16 09:43:45 2022
 """
 
 
-
+import psycopg2
+# import secrets_melanie
 import os
 from datetime import datetime
 
@@ -21,7 +22,7 @@ from statsmodels.tsa.api import VAR
 from statsmodels.tsa.vector_ar.var_model import VARResults, VARResultsWrapper
 
 from statsmodels.tsa.stattools import grangercausalitytests
-from  sklearn.metrics import mean_squared_error,r2_score
+from  sklearn.metrics import mean_squared_error, r2_score
 
 
 
@@ -46,17 +47,15 @@ now = now.strftime("%d%b%Y_%Hh%M")
 
 
 #%%
-
-
 df=pd.read_pickle("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/data_log_2016_2021_VARcountysubset.pkl")
 
 county_name = df[['county_fips','region']].drop_duplicates()
 df_pivot = df.pivot(index='date',columns='county_fips',values='log_median_sale_price')
 
-# continue to forecast 2021 to extract error for 2022 correction
+df = df.drop(columns='region')
+# forecast 2020: need data up to 2019
 df_time = df[((df['year']>='2016')&(df['year']<'2021'))]
 df_time_log = df_time.pivot(index='date',columns='county_fips',values='log_median_sale_price')
-
 
 
 #%%
@@ -94,7 +93,7 @@ df_diff = df_pivot.diff().dropna()
 df_2diff = df_diff.diff().dropna()
 
 #%%
-#### FORECAST 2021 TO EXTRACT ERROR FOR 2022 CORRECTION
+#### FORECAST 2020 
 p=12
 
 num_forecasts = 12
@@ -117,29 +116,6 @@ lastvals_first_diff = df_time_log[-1:]
 for_df = pd.concat([lastvals_first_diff, for_df],axis=0,ignore_index=False).cumsum()[1:]
 
 
-#%%
-#### FORECAST 2022
-
-p=12
-
-num_forecasts = 12
-var_res, forecasts = None, None
-# df_time_2diff = df_time_2diff+0.000000001
-
-# using second differencing
-model = VAR(df_2diff,freq='MS')
-
-
-var_res = model.fit(maxlags=p)
-# var_res.summary()
-lag_order = var_res.k_ar
-forecasts = var_res.forecast(df_2diff.values,steps=num_forecasts)
-dfindex = pd.date_range(start=df_pivot.index[-1],periods = num_forecasts+1, freq='MS')[1:]
-lastvals_second_diff = df_pivot.diff()[-1:]
-for_df2022 = pd.DataFrame(data = forecasts,columns= df_pivot.columns, index = dfindex)
-for_df2022 = pd.concat([lastvals_second_diff, for_df2022],axis=0,ignore_index=False).cumsum()[1:]
-lastvals_first_diff = df_pivot[-1:]
-for_df2022 = pd.concat([lastvals_first_diff, for_df2022],axis=0,ignore_index=False).cumsum()[1:]
 
 
 #%%
@@ -154,17 +130,21 @@ pred = pred.merge(df2021, on=['county_fips','date'])
 pred['log_pred_errors'] = pred['log_median_sale_price']-pred['Pred_log_median_sale_price']
 hist = px.histogram(pred['log_pred_errors'],title='Histogram of residual error of model - appears normally distributed')
 
-hist.write_image("images/Hist_residual_error_model_testing_"+now+".png",width=1980, height=1080)
+hist.write_image("images/Hist_residual_error_model_testing_"+now+"2021Pred.png",width=1980, height=1080)
 
 
 ###  Plot residual errors  (still in log transform)
+# The residuals are uncorrelated. If there are correlations between residuals,
+#  then there is information left in the residuals which should be used in computing forecasts.
+# The residuals have zero mean. If the residuals have a mean other than zero, then the forecasts are biased.
+
 # https://www.qualtrics.com/support/stats-iq/analyses/regression-guides/interpreting-residual-plots-improve-regression/
 ## Keep - shows that errors 
 # (1) they’re pretty symmetrically distributed, tending to cluster towards the middle of the plot.
 # (2) they’re clustered around the lower single digits of the y-axis (e.g., 0.5 or 1.5, not 30 or 150).
 # (3) in general, there aren’t any clear patterns.
 pred_errors = px.scatter(pred,x='log_median_sale_price',y='log_pred_errors', title='Residual error clustered around middle of plot with tight range and no clear patterns')
-pred_errors.write_image("images/Scatter_residual_error_model_testing"+now+".png",width=1980, height=1080)
+pred_errors.write_image("images/Scatter_residual_error_model_testing"+now+"2021Pred.png",width=1980, height=1080)
 
 ###   Transform log predictions to original units
 
@@ -180,7 +160,6 @@ pred = pred.merge(mean_transformed_error,on='county_fips')
 pred['pred_med_sale_trans']  = pred['pred_med_sale_trans_biased']*pred['Mean_pred_error_trans']
 
 
-
 # Prediction by county for 2021
 county_mean_pred2021 = pred.groupby('county_fips')['pred_med_sale_trans'].mean().reset_index(name='Predicted_mean_2021')
 county_mean = pred.groupby('county_fips')['median_sale_price'].mean().reset_index(name='County_mean')
@@ -190,17 +169,21 @@ Predictions2021 = Predictions2021.merge(county_name,on='county_fips')
 Predictions2021['error'] = Predictions2021['County_mean']-Predictions2021['Predicted_mean_2021']
 Predictions2021['error_pct'] = np.absolute(Predictions2021['error'])/Predictions2021['County_mean']*100
 
+# import counties only in ACS dataset for comparison to other models
+acs_counties = pd.read_csv("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/VAR_ACS_counties.txt", dtype='str')
+acs_counties['county_fips'] = acs_counties['county_fips'].astype(str)
+    
+# Filter for counties only in ACS
+Predictions2021 = Predictions2021[Predictions2021['county_fips'].isin(acs_counties['county_fips'])]
 
 
-
-
-# All 1393 counties
+# 613 VAR ACS counties
 rmse_calc = mean_squared_error(Predictions2021['County_mean'], Predictions2021['Predicted_mean_2021'],squared=False) 
-# $2407.2233765332826
-
+# $927
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.r2_score.html
 r2_calc = r2_score(Predictions2021['County_mean'], Predictions2021['Predicted_mean_2021']).round(5) 
-# 0.9998014759535951
+# 0.9999713465785813
+
 
 
 MSE_r2 = go.Figure(data=[go.Table(
@@ -218,104 +201,96 @@ MSE_r2 = go.Figure(data=[go.Table(
                 height=30)
                   )])
     
-MSE_r2.update_layout(title_text = "Model error for 2022 Predictions", width=500, height=300)
+MSE_r2.update_layout(title_text = "Model error for 2021 Predictions", width=500, height=300)
 MSE_r2.show()
-MSE_r2.write_image("images/Time_series_model_error_2022_predictions"+now+".png",width=500, height=300)
-
+MSE_r2.write_image("images/Time_series_model_error_2021_predictions"+now+".png",width=500, height=300)
 
 
 #%%
-###  TRAINING USING ALL DATA
+# Adding 2021 predictions back onto main dataset to compare price change from 2020
 # mean_transformed_error = mean_transformed_error.pivot_table(columns = 'county_fips')
 # mean_transformed_error = mean_transformed_error.set_index('county_fips')
-pred2022 = pd.concat([df_pivot, for_df2022],axis=0,ignore_index=False)
-pred_long = pd.melt(pred2022.reset_index(),id_vars='index',value_name = 'Pred_log_median_sale_price')
+pred2021 = pd.concat([df_time_log, for_df],axis=0,ignore_index=False)
+pred_long = pd.melt(pred2021.reset_index(),id_vars='index',value_name = 'Pred_log_median_sale_price')
 pred_long.columns = ['date','county_fips','log_median_sale_price']
 pred_long['year'] = pred_long['date'].dt.year
 # merge 2021 transformed error onto df
 pred_long = pred_long.merge(mean_transformed_error,on=['county_fips'] )
-# set error for years previous to 2022 = 1
-pred_long['Mean_pred_error_trans'][pred_long['year']!=2022]=1
+# set error for years previous to 2021 = 1
+pred_long['Mean_pred_error_trans'][pred_long['year']!=2021]=1
 # Transform log median price to orignal dollars
 pred_long['Med_price_trans_biased'] = np.exp(pred_long['log_median_sale_price'])
 # multiply median price by error term
 pred_long['Mean_pred_price_trans'] = pred_long['Med_price_trans_biased'] * pred_long['Mean_pred_error_trans']
 
-prediction_std = pred_long[pred_long['year']==2022].groupby('county_fips')['Mean_pred_price_trans'].std().reset_index(name='Predicted_med_price_std')
+prediction_std = pred_long[pred_long['year']==2021].groupby('county_fips')['Mean_pred_price_trans'].std().reset_index(name='Predicted_med_price_std')
 
-
-# group by county and year to get average median sale price 
+# # group by county and year to get average median sale price 
 Predictions_by_county = pred_long.groupby(['county_fips','year'])['Mean_pred_price_trans'].mean().reset_index(name='Mean_median_sale_price')
-# calculate the difference from 2022 to 2021
+# # calculate the difference from 2021 to 2020
 Predictions_by_county['Mean_pred_price_diff'] = Predictions_by_county.groupby('county_fips')['Mean_median_sale_price'].transform(lambda v: v.diff()).shift(-1)
-# add county name for map
+# # add county name for map
 Predictions_by_county = Predictions_by_county.merge(county_name,on='county_fips')
-# calculation the % change from 2021
+# Filter for counties only in ACS
+Predictions_by_county = Predictions_by_county[Predictions_by_county['county_fips'].isin(acs_counties['county_fips'])]
+
+# # calculation the % change from 2020
 Predictions_by_county['Mean_pred_price_pct'] = Predictions_by_county['Mean_pred_price_diff']/Predictions_by_county['Mean_median_sale_price']*100
-Top_counties = Predictions_by_county[Predictions_by_county['year']==2021].sort_values(by=['Mean_pred_price_pct'],ascending=False)
+Top_counties = Predictions_by_county[Predictions_by_county['year']==2020].sort_values(by=['Mean_pred_price_pct'],ascending=False)
 
-Predictions_by_county_uncorrected = pred_long.groupby(['county_fips','year'])['Med_price_trans_biased'].mean().reset_index(name='Mean_median_sale_price')
-# calculate the difference from 2022 to 2021
-Predictions_by_county_uncorrected['Mean_pred_price_diff'] = Predictions_by_county_uncorrected.groupby('county_fips')['Mean_median_sale_price'].transform(lambda v: v.diff()).shift(-1)
-# add county name for map
-Predictions_by_county_uncorrected = Predictions_by_county_uncorrected.merge(county_name,on='county_fips')
-# calculation the % change from 2021
-Predictions_by_county_uncorrected['Mean_pred_price_pct'] = Predictions_by_county_uncorrected['Mean_pred_price_diff']/Predictions_by_county_uncorrected['Mean_median_sale_price']*100
-Top_counties_uncorrected = Predictions_by_county_uncorrected[Predictions_by_county_uncorrected['year']==2021].sort_values(by=['Mean_pred_price_pct'],ascending=False)
-
-#%%
-Predictions2022 = Predictions_by_county_uncorrected[Predictions_by_county_uncorrected['year']==2022][['county_fips','region','Mean_median_sale_price']]
-Predictions2022.columns = ['county_fips','region','Pred_mean_med_sale_price_2022']
-summary2022prediction = Top_counties_uncorrected.merge(Predictions2022,how='left',on=['county_fips','region']).drop(columns=['year'])
+Predictions2021_ = Predictions_by_county[Predictions_by_county['year']==2021][['county_fips','region','Mean_median_sale_price']]
+Predictions2021_.columns = ['county_fips','region','Pred_mean_med_sale_price_2021']
+summary2021prediction = Top_counties.merge(Predictions2021_,how='left',on=['county_fips','region']).drop(columns=['year'])
 # summary2022prediction = summary2022prediction.merge(Predictions2021,how='left',on=['county_fips','region']).drop(columns=['County_mean'])
-summary2022prediction.columns = ['county_fips','Mean_med_sale_price_2021','Mean_pred_price_yoy','county','Mean_pred_price_pct_yoy','Pred_mean_med_sale_price_2022']
+summary2021prediction.columns = ['county_fips','Mean_med_sale_price_2020','Mean_pred_price_yoy','county','Mean_pred_price_pct_yoy','Pred_mean_med_sale_price_2021']
 
-summary2022prediction = summary2022prediction.merge(prediction_std,how='left',on=['county_fips'])
-summary2022prediction['lower_95'] = summary2022prediction['Pred_mean_med_sale_price_2022']-(summary2022prediction['Predicted_med_price_std']*1.96)
-summary2022prediction['upper_95'] = summary2022prediction['Pred_mean_med_sale_price_2022']+(summary2022prediction['Predicted_med_price_std']*1.96)
-summary2022prediction = summary2022prediction[['county_fips','county','Mean_med_sale_price_2021','Pred_mean_med_sale_price_2022','lower_95','upper_95','Mean_pred_price_yoy','Mean_pred_price_pct_yoy']]
-summary2022prediction['Mean_med_sale_price_2021'] = summary2022prediction['Mean_med_sale_price_2021'].map("${:,.0f}".format)
-summary2022prediction['Pred_mean_med_sale_price_2022'] = summary2022prediction['Pred_mean_med_sale_price_2022'].map("${:,.0f}".format)
-summary2022prediction['lower_95'] = summary2022prediction['lower_95'].map("${:,.0f}".format)
-summary2022prediction['upper_95'] = summary2022prediction['upper_95'].map("${:,.0f}".format)
-summary2022prediction['Mean_pred_price_yoy'] = summary2022prediction['Mean_pred_price_yoy'].map("${:,.0f}".format)
-summary2022prediction['Mean_pred_price_pct_yoy'] = summary2022prediction['Mean_pred_price_pct_yoy'].round(2)
-summary2022prediction = summary2022prediction.sort_values(by='Mean_pred_price_pct_yoy',ascending=False)
+summary2021prediction = summary2021prediction.merge(prediction_std,how='left',on=['county_fips'])
+summary2021prediction['lower_95'] = summary2021prediction['Pred_mean_med_sale_price_2021']-(summary2021prediction['Predicted_med_price_std']*1.96)
+summary2021prediction['upper_95'] = summary2021prediction['Pred_mean_med_sale_price_2021']+(summary2021prediction['Predicted_med_price_std']*1.96)
+summary2021prediction = summary2021prediction[['county_fips','county','Mean_med_sale_price_2020','Pred_mean_med_sale_price_2021','lower_95','upper_95','Mean_pred_price_yoy','Mean_pred_price_pct_yoy']]
+summary2021prediction['Mean_med_sale_price_2020'] = summary2021prediction['Mean_med_sale_price_2020'].map("${:,.0f}".format)
+summary2021prediction['Pred_mean_med_sale_price_2021'] = summary2021prediction['Pred_mean_med_sale_price_2021'].map("${:,.0f}".format)
+summary2021prediction['lower_95'] = summary2021prediction['lower_95'].map("${:,.0f}".format)
+summary2021prediction['upper_95'] = summary2021prediction['upper_95'].map("${:,.0f}".format)
+summary2021prediction['Mean_pred_price_yoy'] = summary2021prediction['Mean_pred_price_yoy'].map("${:,.0f}".format)
+summary2021prediction['Mean_pred_price_pct_yoy'] = summary2021prediction['Mean_pred_price_pct_yoy'].round(2)
+summary2021prediction = summary2021prediction.sort_values(by='Mean_pred_price_pct_yoy',ascending=False)
 
-summary2022prediction.columns = ['FIPS','County','Median Sale Price 2021','Predicted Median Sale Price 2022','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase',]
+summary2021prediction.columns = ['FIPS','County','Median Sale Price 2020','Predicted Median Sale Price 2021','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase',]
 
-summary2022prediction.to_csv("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/results/Summary_2022_Predictions_"+now+".csv",index=False)
+summary2021prediction.to_csv("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/results/Summary_2021_Predictions_"+now+".csv",index=False)
 
 #%%
+
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
     counties = json.load(response)
     
-Pred2022_plot = px.choropleth(summary2022prediction, geojson=counties, locations='FIPS', color='Median Sale Price % increase',
+        
+forecasted_pct = px.choropleth(summary2021prediction, geojson=counties, locations='FIPS', color='Median Sale Price % increase',
                            color_continuous_scale="Viridis",
-                            # range_color=(0, 50),
+                            # range_color=(0, 100),
                            hover_name = 'County',
-                           hover_data =['Predicted Median Sale Price 2022','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval'],
+                           hover_data =['Predicted Median Sale Price 2021','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval'],
                            scope="usa",
-                           labels={'Median Sale Price % increase':'% price change from 2021'},
-                           title = 'All counties - 2022 average Median Sale Price % increase over 2021'
+                           labels={'Median Sale Price % increase':'% price change from 2020'},
+                           title='All 613 ACS counties - 2021 average Median Sale Price % increase over 2020'
                           )
 
-Pred2022_plot.show()
-Pred2022_plot.write_image("images/Choro_Summary_all_counties2022_predictions"+now+".png",width=1980, height=1080)
-
-
-Top_10_Pred2022_plot = px.choropleth(summary2022prediction[0:10], geojson=counties, locations='FIPS', color='Median Sale Price % increase',
+forecasted_pct.show()
+forecasted_pct.write_image("images/Choro_all_ACS_counties_pred_"+now+"2020Pred.png",width=1980, height=1080)
+    
+top_cnt = px.choropleth(summary2021prediction[0:10], geojson=counties, locations='FIPS', color='Median Sale Price % increase',
                            color_continuous_scale="Viridis",
-                            # range_color=(0, 50),
+                            # range_color=(0, 100),
                            hover_name = 'County',
-                           hover_data =['Predicted Median Sale Price 2022','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval'],
+                           hover_data =['Predicted Median Sale Price 2021','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval'],
                            scope="usa",
-                           labels={'Median Sale Price % increase':'% price change from 2021'},
-                           title = 'Top 10 Counties - 2022 average Median Sale Price % increase over 2021'
+                           labels={'Median Sale Price % increase':'% price change from 2020'},
+                           title='Top 10 ACS counties - 2021 average Median Sale Price % increase over 2020'
                           )
 
-Top_10_Pred2022_plot.show()
-Top_10_Pred2022_plot.write_image("images/Choro_Summary_top10_counties_2022_predictions"+now+".png",width=1980, height=1080)
+top_cnt.show()
+top_cnt.write_image("images/Choro_top10_ACS_counties_pred_"+now+"2021Pred.png",width=1980, height=1080)
 
 
 
@@ -358,9 +333,26 @@ Top_10_Pred2022_plot.write_image("images/Choro_Summary_top10_counties_2022_predi
 
 # cointegration_test(df_coint.iloc[:,0:5])
 
+#%%
+with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
+    counties = json.load(response)
+    
+Predictions2021.columns = ['FIPS','Predicted Median Sale Price 2021','Median Sale Price 2021','County','Forecast error','Forecast error %']
 
+Predictions2021['Predicted Median Sale Price 2021'] = Predictions2021['Predicted Median Sale Price 2021'].map("${:,.0f}".format)
+Predictions2021['Forecast error %'] = Predictions2021['Forecast error %'].round(2)
 
+Pred2021_error = px.choropleth(Predictions2021, geojson=counties, locations='FIPS', color='Forecast error %',
+                            color_continuous_scale="Viridis",
+                            hover_name = 'County',
+                            hover_data =['Predicted Median Sale Price 2021'],
+                            scope="usa",
+                            labels={'Forecast error %':'2021 % Forecast error'},
+                            title = 'Average forecast error by ACS county for 2021 prediction, with most counties having less error than 5%'
+                          )
 
+Pred2021_error.show()
+Pred2021_error.write_image("images/Choro_average_pred_error_2021"+now+".png",width=1980, height=1080)
 
 
 
