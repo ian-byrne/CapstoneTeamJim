@@ -1,13 +1,21 @@
+"""
+Main module for display of the Capstone project for Team JIM.
+"""
 import streamlit as st
+
+# the below imports are subject to change based on the final form of modules.
 from model_one import model1
 from model_two import model2
-from model_three import model3
+from model_three import run_nn_model
 
 
 def main():
     """Display of the capstone project."""
 
-    st.title("DEV - SUBJECT TO CHANGE")  # TODO: remove before final production version.
+    st.warning(
+        "DEV - SUBJECT TO CHANGE"
+    )  # TODO: remove before final production version.
+
     st.title("Capstone Project Team JIM")
     st.write("Authors: Jenny Ney, Melanie Starr, Ian Byrne")
 
@@ -33,7 +41,8 @@ def main():
 
     if choice == "RNN Analysis":
         st.subheader("Neural Network Analysis")
-        model3()
+        
+        run_nn_model()
 
     if choice == "Conclusion":
         st.subheader("Conclusions")
