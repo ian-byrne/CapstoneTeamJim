@@ -61,18 +61,18 @@ def main():
         model1()
 
     if choice == "VAR Analysis":
-        st.subheader("VAR Anaylsis")
+        st.subheader("VAR Analysis")
         model2()
 
     if choice == "RNN Analysis":
         st.subheader("Neural Network Analysis")
         period = st.radio("Please select yearly or monthly data", ("Yearly", "Monthly"))
-        # display text for post/anaylsis
+        # display text for post/analysis
         run_nn_model(period)
 
     if choice == "Conclusion":
         st.subheader("Conclusions")
-        st.write("Summary of Capstone project conlusions.")
+        st.write("Summary of Capstone project conclusions.")
 
 
 if __name__ == "__main__":
