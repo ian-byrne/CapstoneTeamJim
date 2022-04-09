@@ -7,7 +7,7 @@ from model_three import model3
 def main():
     """Display of the capstone project."""
 
-    st.title("DEV - SUBJECT TO CHANGE") # TODO: remove before final production version.
+    st.title("DEV - SUBJECT TO CHANGE")  # TODO: remove before final production version.
     st.title("Capstone Project Team JIM")
     st.write("Authors: Jenny Ney, Melanie Starr, Ian Byrne")
 
@@ -20,6 +20,8 @@ def main():
             """With this app the authors indend to the user to be able to follow along
             with design choices made in each model and view our results."""
         )
+        with st.expander("Project Requirements"):
+            st.write("""TODO: Add the requirements for the project here.""")
 
     if choice == "Tree Analysis":
         st.subheader("Tree Analysis")
