@@ -6,28 +6,7 @@ import numpy as np
 import warnings
 from utils import load_data
 
-# # imports for training
-# import pytorch_lightning as pl
-# from pytorch_lightning.loggers import TensorBoardLogger
-# from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
-
-# # import dataset, network to train and metric to optimize
-# from pytorch_forecasting import (
-#     Baseline,
-#     TimeSeriesDataSet,
-#     TemporalFusionTransformer,
-#     QuantileLoss,
-#     RMSE,
-#     MAE,
-#     MAPE,
-#     MASE,
-#     SMAPE,
-# )
-# from pytorch_forecasting.data import TimeSeriesDataSet, GroupNormalizer, NaNLabelEncoder
-# import torch
-
 warnings.filterwarnings("ignore")  # avoid printing out absolute paths
-# potentially can keep write up here, or make another file
 
 
 def run_nn_model(period):
@@ -48,7 +27,7 @@ def run_nn_model(period):
         data["state_fips"] = data["state_fips"].astype("str").astype("category")
         data = None
 
-        # define the dataset, i.e. add metadata to pandas dataframe for the model to understand it
+        # define the dataset, add metadata to pandas dataframe for model understanding
         max_encoder_length = 4
         max_prediction_length = 1
         training_cutoff = (

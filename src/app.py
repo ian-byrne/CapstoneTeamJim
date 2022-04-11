@@ -39,7 +39,7 @@ st.warning("DEV - SUBJECT TO CHANGE")  # TODO: remove before final production ve
 st.title("Capstone Project Team JIM")
 st.write("**Authors:** Jenny Ney, Melanie Starr, Ian Byrne")
 
-menu = ["Home", "Tree Analysis", "VAR Analysis", "RNN Analysis", "Conclusion"]
+menu = ["Home", "Tree Analysis", "VAR Analysis", "Transformer Analysis", "Conclusion"]
 choice = st.sidebar.selectbox("Menu", menu)
 
 if choice == "Home":
@@ -95,13 +95,15 @@ if choice == "Home":
 
 if choice == "Tree Analysis":
     st.subheader("Tree Analysis")
+    st.write("""Tree Analysis post.""")
     model1()
 
 if choice == "VAR Analysis":
     st.subheader("VAR Analysis")
+    st.write("""VAR Analysis post.""")
     model2()
 
-if choice == "RNN Analysis":
+if choice == "Transformer Analysis":
     st.subheader("Neural Network Analysis")
     period = st.radio("Please select yearly or monthly data", ("Yearly", "Monthly"))
     # display text for post/analysis
