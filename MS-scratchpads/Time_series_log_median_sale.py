@@ -12,6 +12,7 @@ from datetime import datetime
 
 import pandas as pd
 import numpy as np
+import pickle
 
 
 from statsmodels.tsa.stattools import adfuller
@@ -48,7 +49,7 @@ now = now.strftime("%d%b%Y_%Hh%M")
 #%%
 
 
-df=pd.read_pickle("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/data_log_2016_2021_VARcountysubset.pkl")
+df=pd.read_pickle("data_log_2016_2021_VARcountysubset.pkl")
 
 county_name = df[['county_fips','region']].drop_duplicates()
 df_pivot = df.pivot(index='date',columns='county_fips',values='log_median_sale_price')
@@ -98,17 +99,16 @@ df_2diff = df_diff.diff().dropna()
 p=12
 
 num_forecasts = 12
-var_res, forecasts = None, None
-# df_time_2diff = df_time_2diff+0.000000001
+var_res2021, forecasts = None, None
+
 
 # using second differencing
-model = VAR(df_time_2diff_log,freq='MS')
+model2021 = VAR(df_time_2diff_log,freq='MS')
 
 
-var_res = model.fit(maxlags=p)
-# var_res.summary()
-lag_order = var_res.k_ar
-forecasts = var_res.forecast(df_time_2diff_log.values,steps=num_forecasts)
+var_res2021 = model2021.fit(maxlags=p)
+lag_order = var_res2021.k_ar
+forecasts = var_res2021.forecast(df_time_2diff_log.values,steps=num_forecasts)
 dfindex = pd.date_range(start=df_time_log.index[-1],periods = num_forecasts+1, freq='MS')[1:]
 lastvals_second_diff = df_time_log.diff()[-1:]
 for_df = pd.DataFrame(data = forecasts,columns= df_time_log.columns, index = dfindex)
@@ -124,14 +124,13 @@ p=12
 
 num_forecasts = 12
 var_res, forecasts = None, None
-# df_time_2diff = df_time_2diff+0.000000001
+
 
 # using second differencing
 model = VAR(df_2diff,freq='MS')
 
 
 var_res = model.fit(maxlags=p)
-# var_res.summary()
 lag_order = var_res.k_ar
 forecasts = var_res.forecast(df_2diff.values,steps=num_forecasts)
 dfindex = pd.date_range(start=df_pivot.index[-1],periods = num_forecasts+1, freq='MS')[1:]
@@ -141,6 +140,12 @@ for_df2022 = pd.concat([lastvals_second_diff, for_df2022],axis=0,ignore_index=Fa
 lastvals_first_diff = df_pivot[-1:]
 for_df2022 = pd.concat([lastvals_first_diff, for_df2022],axis=0,ignore_index=False).cumsum()[1:]
 
+
+#%%
+
+#%%
+filename = 'Time_series_2022_log_prediction.pkl'
+pickle.dump(var_res, open(filename, 'wb'))
 
 #%%
 ###  TRAINING USING HOLDOUT 2021 DATA
@@ -284,7 +289,7 @@ summary2022prediction = summary2022prediction.sort_values(by='Mean_pred_price_pc
 
 summary2022prediction.columns = ['FIPS','County','Median Sale Price 2021','Predicted Median Sale Price 2022','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase',]
 
-summary2022prediction.to_csv("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/results/Summary_2022_Predictions_"+now+".csv",index=False)
+summary2022prediction.to_csv("results/Summary_2022_Predictions_"+now+".csv",index=False)
 
 #%%
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
