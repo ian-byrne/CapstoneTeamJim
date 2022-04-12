@@ -2,29 +2,9 @@
 Main module for display of the Capstone project for Team JIM.
 """
 import streamlit as st
-
 import warnings
 from utils import load_data
 
-# imports for training
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import TensorBoardLogger
-from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
-
-# import dataset, network to train and metric to optimize
-from pytorch_forecasting import (
-    Baseline,
-    TimeSeriesDataSet,
-    TemporalFusionTransformer,
-    QuantileLoss,
-    RMSE,
-    MAE,
-    MAPE,
-    MASE,
-    SMAPE,
-)
-from pytorch_forecasting.data import TimeSeriesDataSet, GroupNormalizer, NaNLabelEncoder
-import torch
 
 warnings.filterwarnings("ignore")  # avoid printing out absolute paths
 
@@ -107,7 +87,7 @@ if choice == "Transformer Analysis":
     st.subheader("Neural Network Analysis")
     period = st.radio("Please select yearly or monthly data", ("Yearly", "Monthly"))
     # display text for post/analysis
-    run_nn_model(period)
+    run_nn_model(period)  # maybe add run button to reduce overhead
 
 if choice == "Conclusion":
     st.subheader("Conclusions")
