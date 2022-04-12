@@ -87,7 +87,7 @@ if choice == "Transformer Analysis":
     st.subheader("Neural Network Analysis")
     period = st.radio("Please select yearly or monthly data", ("Yearly", "Monthly"))
     # display text for post/analysis
-    run_nn_model(period)  # maybe add run button to reduce overhead
+    # run_nn_model(period)  # maybe add run button to reduce overhead
 
 if choice == "Conclusion":
     st.subheader("Conclusions")

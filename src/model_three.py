@@ -28,7 +28,7 @@ import torch
 
 warnings.filterwarnings("ignore")  # avoid printing out absolute paths
 
-
+# add ability to run model if desired, not required.
 def run_nn_model(period):
     """
     Run the pytorch forecasting model(s).
