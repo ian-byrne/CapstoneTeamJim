@@ -10,6 +10,7 @@ import psycopg2
 # import secrets_melanie
 import os
 from datetime import datetime
+import pickle
 
 import pandas as pd
 import numpy as np
@@ -46,10 +47,9 @@ now = datetime.now()
 now = now.strftime("%d%b%Y_%Hh%M")
 
 
-
 #%%
 
-df=pd.read_pickle("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/data_log_2016_2021_VARcountysubset.pkl")
+df=pd.read_pickle("data_log_2016_2021_VARcountysubset.pkl")
 
 county_name = df[['county_fips','region']].drop_duplicates()
 df_pivot = df.pivot(index='date',columns='county_fips',values='log_median_sale_price')
@@ -118,7 +118,8 @@ for_df = pd.concat([lastvals_first_diff, for_df],axis=0,ignore_index=False).cums
 
 
 #%%
-
+filename = 'Time_series_2020_log_prediction.pkl'
+pickle.dump(var_res, open(filename, 'wb'))
 
 #%%
 ###  TRAINING USING HOLDOUT 2020 DATA
@@ -176,7 +177,7 @@ Predictions2020['error'] = Predictions2020['County_mean']-Predictions2020['Predi
 Predictions2020['error_pct'] = np.absolute(Predictions2020['error'])/Predictions2020['County_mean']*100
 
 # import counties only in ACS dataset for comparison to other models
-acs_counties = pd.read_csv("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/VAR_ACS_counties.txt", dtype='str')
+acs_counties = pd.read_csv("VAR_ACS_counties.txt", dtype='str')
 acs_counties['county_fips'] = acs_counties['county_fips'].astype(str)
     
 # Filter for counties only in ACS
@@ -264,7 +265,7 @@ summary2020prediction = summary2020prediction.sort_values(by='Mean_pred_price_pc
 
 summary2020prediction.columns = ['FIPS','County','Median Sale Price 2019','Predicted Median Sale Price 2020','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase']
 
-summary2020prediction.to_csv("C:/Users/melan/repo/Capstone/CapstoneTeamJim/MS-scratchpads/results/Summary_2020_Predictions_"+now+".csv",index=False)
+summary2020prediction.to_csv("results/Summary_2020_Predictions_"+now+".csv",index=False)
 
 
 
