@@ -98,22 +98,31 @@ def tree_model():
                 color='Feature', template='plotly_dark',
                 color_discrete_sequence=px.colors.sequential.Plasma_r)
 
-    fig.write_image("../../reports/figures/Supervised/tree_model1_feature_importances.png",width=500, height=300)
+    fig.update_layout(
+                  height = 800,
+                  width = 1500,
+                  font=dict(size = 18),
+                  margin = {'t':50, 'b':50, 'l':50, 'r':50})
+
+    fig.write_image("../../reports/figures/Supervised/tree_model1_feature_importances.png")
 
     ## chart of prediction delta
 
     pred2019 = et.predict(X_val)
     data2019['Predicted_sale_price_change'] = pred2019
     data2019['Prediction_delta'] = ((data2019['median_sale_price'] - data2019['Predicted_sale_price_change'])/data2019['median_sale_price'])*100
-
+    ##TODO rename columns for viz
     fig = px.choropleth(data2019, geojson=counties, locations='county_fips', color='Prediction_delta',
                             color_continuous_scale="Viridis",
                                 range_color=(0, 100),
+                            hover_name = 'county_fips',
+                            hover_data =['Predicted_sale_price_change','median_sale_price'],
                             scope="usa",
-                            labels={'Prediction_delta':'Prediction delta for 2019 HPI'}
+                            labels={'Prediction_delta':'% Difference Predicted-Actual'},
+                            title='Prediction Delta 2019 Predicting 2020 to Actual 2020 Values'
                             )
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-    fig.write_image("../../reports/figures/Supervised/tree_model1_prediciton_delta.png", width=500, height=300)
+
+    fig.write_image("../../reports/figures/Supervised/tree_model1_prediciton_delta.png",width=1980, height=1080)
 
     ## calculate rmse
 
@@ -127,10 +136,9 @@ def tree_model():
 
     corr_df = df[['home_value_median', 'median_ppsf', 'median_list_price', 'median_list_ppsf', 'median_sale_price']]
     mask = np.triu(np.ones_like(corr_df.corr(), dtype=np.bool))
-    sns.heatmap(corr_df.corr(), mask=mask, vmin=-1, vmax=1, annot=True, cmap='RdPu')
-    plt.savefig('../../reports/figures/Supervised/tree_model1_correlation_matrix.png', width=500, height=300)
+    sns.heatmap(corr_df.corr(), mask=mask, annot=True, cmap='RdPu')
+    plt.savefig('../../reports/figures/Supervised/tree_model1_correlation_matrix.png', width=500, height=300, bbox_inches="tight")
 
-    ##TODO alter scale/resolution of images
     ## model2 with highly correlated features removed
 
     df = df.drop(['home_value_median', 'median_list_price', 'median_ppsf', 'median_list_ppsf'], axis=1)
@@ -167,7 +175,13 @@ def tree_model():
                 color='Feature', template='plotly_dark',
                 color_discrete_sequence=px.colors.sequential.Plasma_r)
 
-    fig.write_image("../../reports/figures/Supervised/tree_model2_feature_importances.png", width=500, height=300)
+    fig.update_layout(
+                  height = 800,
+                  width = 1500,
+                  font=dict(size = 18),
+                  margin = {'t':50, 'b':50, 'l':50, 'r':50})
+
+    fig.write_image("../../reports/figures/Supervised/tree_model2_feature_importances.png")
 
     ## chart of prediction delta
 
