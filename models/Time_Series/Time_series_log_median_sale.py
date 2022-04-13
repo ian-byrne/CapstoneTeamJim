@@ -13,6 +13,8 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import pickle
+from config import definitions
+root_dir = definitions.root_directory()
 
 
 from statsmodels.tsa.stattools import adfuller
@@ -39,9 +41,6 @@ import json
 
 pd.set_option('display.max_columns',None)
 
-if not os.path.exists("images"):
-    os.mkdir("images")
-
 now = datetime.now()
 now = now.strftime("%d%b%Y_%Hh%M")
 
@@ -49,7 +48,7 @@ now = now.strftime("%d%b%Y_%Hh%M")
 #%%
 
 
-df=pd.read_pickle("data_log_2016_2021_VARcountysubset.pkl")
+df=pd.read_pickle(os.path.join(root_dir,"..","data","processed","data_log_2016_2021_VARcountysubset.pkl"))
 
 county_name = df[['county_fips','region']].drop_duplicates()
 df_pivot = df.pivot(index='date',columns='county_fips',values='log_median_sale_price')
@@ -144,8 +143,8 @@ for_df2022 = pd.concat([lastvals_first_diff, for_df2022],axis=0,ignore_index=Fal
 #%%
 
 #%%
-filename = 'Time_series_2022_log_prediction.pkl'
-pickle.dump(var_res, open(filename, 'wb'))
+# filename = 'Time_series_2022_log_prediction.pkl'
+# pickle.dump(var_res, open(filename, 'wb'))
 
 #%%
 ###  TRAINING USING HOLDOUT 2021 DATA
@@ -159,7 +158,7 @@ pred = pred.merge(df2021, on=['county_fips','date'])
 pred['log_pred_errors'] = pred['log_median_sale_price']-pred['Pred_log_median_sale_price']
 hist = px.histogram(pred['log_pred_errors'],title='Histogram of residual error of model - appears normally distributed')
 
-hist.write_image("images/Hist_residual_error_model_testing_"+now+".png",width=1980, height=1080)
+hist.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Hist_residual_error_model_testing.png"),width=1980, height=1080)
 
 
 ###  Plot residual errors  (still in log transform)
@@ -169,7 +168,7 @@ hist.write_image("images/Hist_residual_error_model_testing_"+now+".png",width=19
 # (2) they’re clustered around the lower single digits of the y-axis (e.g., 0.5 or 1.5, not 30 or 150).
 # (3) in general, there aren’t any clear patterns.
 pred_errors = px.scatter(pred,x='log_median_sale_price',y='log_pred_errors', title='Residual error clustered around middle of plot with tight range and no clear patterns')
-pred_errors.write_image("images/Scatter_residual_error_model_testing"+now+".png",width=1980, height=1080)
+pred_errors.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Scatter_residual_error_model_testing.png"),width=1980, height=1080)
 
 ###   Transform log predictions to original units
 
@@ -210,14 +209,14 @@ r2_calc = r2_score(Predictions2021['County_mean'], Predictions2021['Predicted_me
 
 MSE_r2 = go.Figure(data=[go.Table(
     header=dict(values=['RMSE','R^2 Score'],
-                line_color='darkslategray',
-                fill_color='royalblue',
+                # line_color='darkslategray',
+                # fill_color='royalblue',
                 align=['center','center'],
-                font=dict(color='white', size=12),
+                # font=dict(color='white', size=12),
                 height=40),
     cells=dict(values=[("${:,.0f}".format(rmse_calc)), r2_calc],
-                line_color='darkslategray',
-                fill=dict(color=['white', 'white']),
+                # line_color='darkslategray',
+                # fill=dict(color=['white', 'white']),
                 align=['center', 'center'],
                 font_size=12,
                 height=30)
@@ -225,7 +224,7 @@ MSE_r2 = go.Figure(data=[go.Table(
     
 MSE_r2.update_layout(title_text = "Model error for 2022 Predictions", width=500, height=300)
 MSE_r2.show()
-MSE_r2.write_image("images/Time_series_model_error_2022_predictions"+now+".png",width=500, height=300)
+MSE_r2.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Table_Time_series_model_error_2022_predictions.png"),width=500, height=300)
 
 
 
@@ -289,7 +288,7 @@ summary2022prediction = summary2022prediction.sort_values(by='Mean_pred_price_pc
 
 summary2022prediction.columns = ['FIPS','County','Median Sale Price 2021','Predicted Median Sale Price 2022','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase',]
 
-summary2022prediction.to_csv("results/Summary_2022_Predictions_"+now+".csv",index=False)
+summary2022prediction.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Summary_2022_Predictions_.csv"),index=False)
 
 #%%
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
@@ -306,7 +305,7 @@ Pred2022_plot = px.choropleth(summary2022prediction, geojson=counties, locations
                           )
 
 Pred2022_plot.show()
-Pred2022_plot.write_image("images/Choro_Summary_all_counties2022_predictions"+now+".png",width=1980, height=1080)
+Pred2022_plot.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_Summary_all_counties2022_predictions.png"),width=1980, height=1080)
 
 
 Top_10_Pred2022_plot = px.choropleth(summary2022prediction[0:10], geojson=counties, locations='FIPS', color='Median Sale Price % increase',
@@ -320,7 +319,7 @@ Top_10_Pred2022_plot = px.choropleth(summary2022prediction[0:10], geojson=counti
                           )
 
 Top_10_Pred2022_plot.show()
-Top_10_Pred2022_plot.write_image("images/Choro_Summary_top10_counties_2022_predictions"+now+".png",width=1980, height=1080)
+Top_10_Pred2022_plot.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_Summary_top10_counties_2022_predictions.png"),width=1980, height=1080)
 
 
 

@@ -133,6 +133,7 @@ sqlparse==0.4.2
 srsly==1.0.5
 stack-data==0.2.0
 statsmodels==0.13.2
+streamlit 1.8.1
 tabulate==0.8.9
 tangled-up-in-unicode==0.1.0
 tenacity==8.0.1

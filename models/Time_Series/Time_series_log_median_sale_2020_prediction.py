@@ -43,9 +43,6 @@ import json
 
 pd.set_option('display.max_columns',None)
 
-# if not os.path.exists("images"):
-#     os.mkdir("images")
-
 now = datetime.now()
 now = now.strftime("%d%b%Y_%Hh%M")
 
@@ -137,7 +134,7 @@ pred = pred.merge(df2020, on=['county_fips','date'])
 pred['log_pred_errors'] = pred['log_median_sale_price']-pred['Pred_log_median_sale_price']
 hist = px.histogram(pred['log_pred_errors'],title='Histogram of residual error of model - appears normally distributed')
 hist.show()
-hist.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Hist_residual_error_model_testing_"+now+"2020Pred.png"),width=1980, height=1080)
+hist.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Hist_residual_error_model_testing_2020Pred.png"),width=1980, height=1080)
 
 
 
@@ -155,7 +152,7 @@ hist.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","H
 # (3) in general, there aren’t any clear patterns.
 pred_errors = px.scatter(pred,x='log_median_sale_price',y='log_pred_errors', title='Residual error clustered around middle of plot with tight range and no clear patterns')
 pred_errors.show()
-pred_errors.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Scatter_residual_error_model_testing"+now+"2020Pred.png"),width=1980, height=1080)
+pred_errors.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Scatter_residual_error_model_testing_2020Pred.png"),width=1980, height=1080)
 
 ###   Transform log predictions to original units
 
@@ -213,7 +210,7 @@ MSE_r2 = go.Figure(data=[go.Table(
     
 MSE_r2.update_layout(title_text = "Model error for 2020 Predictions",width=500, height=300)
 MSE_r2.show()
-MSE_r2.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Time_series_model_error_2020_predictions"+now+".png"),width=500, height=300)
+MSE_r2.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Table_Time_series_model_error_2020_predictions.png"),width=500, height=300)
 
 
 
@@ -269,7 +266,7 @@ summary2020prediction = summary2020prediction.sort_values(by='Mean_pred_price_pc
 
 summary2020prediction.columns = ['FIPS','County','Median Sale Price 2019','Predicted Median Sale Price 2020','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase']
 
-summary2020prediction.to_csv(os.path.join(root_dir,"..","reports","results","Summary_2020_Predictions_"+now+".csv"),index=False)
+summary2020prediction.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Summary_2020_Predictions.csv"),index=False)
 
 
 
@@ -288,7 +285,7 @@ forecasted_pct = px.choropleth(summary2020prediction, geojson=counties, location
                           )
 
 forecasted_pct.show()
-forecasted_pct.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_all_ACS_counties_pred_"+now+"2020Pred.png"),width=1980, height=1080)
+forecasted_pct.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_all_ACS_counties_pred_2020Pred.png"),width=1980, height=1080)
     
 top_cnt = px.choropleth(summary2020prediction[0:10], geojson=counties, locations='FIPS', color='Median Sale Price % increase',
                            color_continuous_scale="Viridis",
@@ -301,7 +298,7 @@ top_cnt = px.choropleth(summary2020prediction[0:10], geojson=counties, locations
                           )
 # fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 top_cnt.show()
-top_cnt.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_top10_ACS_counties_pred_"+now+"2020Pred.png"),width=1980, height=1080)
+top_cnt.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_top10_ACS_counties_pred_2020Pred.png"),width=1980, height=1080)
 
 
 
@@ -362,7 +359,7 @@ Pred2020_error = px.choropleth(Predictions2020, geojson=counties, locations='FIP
                           )
 
 Pred2020_error.show()
-Pred2020_error.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_average_pred_error_2020"+now+".png"),width=1980, height=1080)
+Pred2020_error.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_average_pred_error_2020.png"),width=1980, height=1080)
 
 
 
