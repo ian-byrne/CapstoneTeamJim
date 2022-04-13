@@ -132,6 +132,9 @@ pred.columns=['date','county_fips','Pred_log_median_sale_price']
 pred = pred.merge(df2020, on=['county_fips','date'])
 # calculate the log_errors
 pred['log_pred_errors'] = pred['log_median_sale_price']-pred['Pred_log_median_sale_price']
+
+pred.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Data_hist_scatter_2020Predictions.csv"),index=False)
+
 hist = px.histogram(pred['log_pred_errors'],title='Histogram of residual error of model - appears normally distributed')
 hist.show()
 hist.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Hist_residual_error_model_testing_2020Pred.png"),width=1980, height=1080)
@@ -348,6 +351,8 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
 Predictions2020.columns = ['FIPS','Predicted Median Sale Price 2020','Median Sale Price 2020','County','Forecast error','Forecast error %']
 Predictions2020['Predicted Median Sale Price 2020'] = Predictions2020['Predicted Median Sale Price 2020'].map("${:,.0f}".format)
 Predictions2020['Forecast error %'] = Predictions2020['Forecast error %'].round(2)
+Predictions2020.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Prediction_error_2020.csv"),index=False)
+
 
 Pred2020_error = px.choropleth(Predictions2020, geojson=counties, locations='FIPS', color='Forecast error %',
                             color_continuous_scale="Viridis",

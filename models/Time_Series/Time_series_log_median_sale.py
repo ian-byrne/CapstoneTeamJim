@@ -288,7 +288,7 @@ summary2022prediction = summary2022prediction.sort_values(by='Mean_pred_price_pc
 
 summary2022prediction.columns = ['FIPS','County','Median Sale Price 2021','Predicted Median Sale Price 2022','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase',]
 
-summary2022prediction.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Summary_2022_Predictions_.csv"),index=False)
+summary2022prediction.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Summary_2022_Predictions.csv"),index=False)
 
 #%%
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:

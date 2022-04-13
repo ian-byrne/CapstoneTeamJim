@@ -12,6 +12,7 @@ warnings.filterwarnings("ignore")  # avoid printing out absolute paths
 from model_one import model1
 from model_two import model2
 from model_three import run_nn_model
+from conclusion import conclusion
 
 
 st.warning("DEV - SUBJECT TO CHANGE")  # TODO: remove before final production version.
@@ -19,7 +20,7 @@ st.warning("DEV - SUBJECT TO CHANGE")  # TODO: remove before final production ve
 st.title("Capstone Project Team JIM")
 st.write("**Authors:** Jenny Ney, Melanie Starr, Ian Byrne")
 
-menu = ["Home", "Tree Analysis", "VAR Analysis", "Transformer Analysis", "Conclusion"]
+menu = ["Home", "Supervised", "Time Series", "Neural Network", "Conclusion"]
 choice = st.sidebar.selectbox("Menu", menu)
 
 if choice == "Home":
@@ -73,23 +74,23 @@ if choice == "Home":
         """  # TODO: Add other packages if needed
         )
 
-if choice == "Tree Analysis":
-    st.subheader("Tree Analysis")
+if choice == "Supervised":
+    st.header("Supervised Model")
     st.write("""Tree Analysis post.""")
     model1()
 
-if choice == "VAR Analysis":
-    st.subheader("VAR Analysis")
+if choice == "Time Series":
+    st.header("Time Series")
     st.write("""VAR Analysis post.""")
     model2()
 
-if choice == "Transformer Analysis":
-    st.subheader("Neural Network Analysis")
+if choice == "Neural Network":
+    st.header("Neural Network")
     period = st.radio("Please select yearly or monthly data", ("Yearly", "Monthly"))
     # display text for post/analysis
     # run_nn_model(period)  # maybe add run button to reduce overhead
 
 if choice == "Conclusion":
-    st.subheader("Conclusions")
+    st.header("Conclusion")
     st.write("Summary of Capstone project conclusions.")
-
+    conclusion()
