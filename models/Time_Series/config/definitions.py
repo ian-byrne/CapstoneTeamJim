@@ -12,8 +12,8 @@ import os
 def root_directory():
     return os.path.realpath(os.path.join(os.path.dirname('__file__'), '..'))
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
     
-    root_directory()
+#     root_directory()
     # ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname('__file__'), '..'))
