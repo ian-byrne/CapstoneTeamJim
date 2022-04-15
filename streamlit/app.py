@@ -11,11 +11,11 @@ warnings.filterwarnings("ignore")  # avoid printing out absolute paths
 # the below imports are subject to change based on the final form of modules.
 from model_one import model1
 from model_two import model2
-from model_three import run_nn_model
+# from model_three import run_nn_model
 from conclusion import conclusion
 
 
-st.warning("DEV - SUBJECT TO CHANGE")  # TODO: remove before final production version.
+st.warning("This analysis is for a Capstone project and the result have not been vetted by a licensed professional.  Please invest responsibly.")  # TODO: remove before final production version.
 
 st.title("Capstone Project Team JIM")
 st.write("**Authors:** Jenny Ney, Melanie Starr, Ian Byrne")
@@ -31,7 +31,7 @@ if choice == "Home":
     )
     st.write(
         """
-    Welcome to the **RE investment region analysis Capstone Project** for our Master of
+    Welcome to the **Real Estate investment region analysis Capstone Project** for our Master of
     Applied Data Science from the University of Michigan School of Information!
 
     The authors Jenny Ney, Ian Byrne, and Melanie Starr formed their Capstone Team JIM
@@ -70,6 +70,7 @@ if choice == "Home":
             """
         - `pytorch-lightning==1.6.0`
         - `pytorch-forecasting==0.10.1`
+        - `plotly>=5.6.0,<=5.7.0`
         - `ADD OTHER PACKAGES IF NECESSARY`
         """  # TODO: Add other packages if needed
         )
@@ -81,7 +82,7 @@ if choice == "Supervised":
 
 if choice == "Time Series":
     st.header("Time Series")
-    st.write("""VAR Analysis post.""")
+    st.write("""Time Series modeling looks for patterns in time sequenced datasets in order to predict the future.  The time series model selected for this project is the Vector Autoregression model.""")
     model2()
 
 if choice == "Neural Network":
@@ -92,5 +93,5 @@ if choice == "Neural Network":
 
 if choice == "Conclusion":
     st.header("Conclusion")
-    st.write("Summary of Capstone project conclusions.")
+    st.write("Based on a comparison on the metrics between the models, the time series model performed the best **(assumption - need to validate against NN model results)")
     conclusion()
