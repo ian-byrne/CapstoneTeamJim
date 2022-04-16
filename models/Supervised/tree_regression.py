@@ -74,6 +74,8 @@ def tree_model():
     feature_df = pd.DataFrame(d)
     feature_df = feature_df.sort_values(by='Importance', ascending=False).reset_index(drop=True)
 
+    feature_df.to_csv("streamlit/data/tree_model1_features.csv")
+
     fig = px.bar_polar(feature_df.iloc[:30,:], r='Importance', theta='Feature',
                 color='Feature', template='plotly_dark',
                 color_discrete_sequence=px.colors.sequential.Plasma_r)
@@ -115,6 +117,7 @@ def tree_model():
     fig.write_image("reports/figures/Supervised/tree_model1_scores.png", width=500, height=300)
 
     corr_df = df[['home_value_median', 'median_ppsf', 'median_list_price', 'median_list_ppsf', 'median_sale_price']]
+    corr_df.to_csv("streamlit/data/correlation_matrix.csv")
     mask = np.triu(np.ones_like(corr_df.corr(), dtype=np.bool))
     sns.heatmap(corr_df.corr(), mask=mask, annot=True, cmap='RdPu')
     plt.savefig('reports/figures/Supervised/tree_model1_correlation_matrix.png', width=500, height=300, bbox_inches="tight")
@@ -148,6 +151,8 @@ def tree_model():
     feature_df = pd.DataFrame(d)
     feature_df = feature_df.sort_values(by='Importance', ascending=False).reset_index(drop=True)
 
+    feature_df.to_csv("streamlit/data/tree_model2_features.csv")
+
     fig = px.bar_polar(feature_df.iloc[:30,:], r='Importance', theta='Feature',
                 color='Feature', template='plotly_dark',
                 color_discrete_sequence=px.colors.sequential.Plasma_r)
@@ -165,19 +170,34 @@ def tree_model():
     pred2019 = et.predict(X_val)
     data2019['Predicted_sale_price_change'] = pred2019
     data2019['Prediction_delta'] = ((data2019['median_sale_price'] - data2019['Predicted_sale_price_change'])/data2019['median_sale_price'])*100
+    data2019 = data2019[['county_fips', 'median_sale_price', 'Predicted_sale_price_change', 'Prediction_delta']]
+    data2019['percent_error'] = np.absolute(data2019['Prediction_delta'])/data2019['median_sale_price']*100
+    data2019.columns = ['FIPS', 'Median Sale Price 2020', 'Predicted', 'error', '2020 % Forecast Error']
+    county_names = pd.read_csv('data/processed/county_names.csv', header=1)
+    data2019['FIPS'] = data2019['FIPS'].apply(lambda x: int(x))
+    county_names['FIPS'] = county_names['FIPS'].apply(lambda x: int(x))
+    county_names['County'] = county_names['name'].astype(str) + ', ' + county_names['state'].astype(str)
 
-    fig = px.choropleth(data2019, geojson=counties, locations='county_fips', color='Prediction_delta',
+    data2019 = data2019.merge(county_names, how='left', on='FIPS')
+    data2019['Predicted Median Sale Price 2020'] = data2019['Predicted'].apply(lambda x: "${:,.0f}".format(x))
+    data2019['2020 % Forecast Error'] = data2019['2020 % Forecast Error'].apply(lambda x: round(x, 3))
+    data2019.to_csv("streamlit/data/prediction_map.csv", index=False)
+
+    fig = px.choropleth(data2019, geojson=counties, locations='FIPS', color='2020 % Forecast Error',
                             color_continuous_scale="Viridis",
                                 range_color=(0, 100),
+                            hover_name = 'County',
+                            hover_data =['Predicted Median Sale Price 2020'],
                             scope="usa",
-                            labels={'Prediction_delta':'Prediction delta for 2019 HPI'}
+                            labels={'Forecast error %':'2020 % Forecast error'},
+                            title = 'Average forecast error by ACS county for 2020 prediction'
                             )
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     fig.write_image("reports/figures/Supervised/tree_model2_prediciton_delta.png", width=500, height=300)
 
     ## calculate rmse
 
-    rmse = '$'+str(round(mean_squared_error(data2019['median_sale_price'], data2019['Predicted_sale_price_change'], squared=False)))
+    rmse = '$'+str(round(mean_squared_error(data2019['Median Sale Price 2020'], data2019['Predicted'], squared=False)))
 
 
     fig = go.Figure(data=[go.Table(header=dict(values=['Test R2', '2019 Validation R2', '2019 RMSE']),
