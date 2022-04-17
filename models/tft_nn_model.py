@@ -49,6 +49,75 @@ def load_data(granularity="year"):
             print("Loading yearly data...")
             data = pd.read_pickle("data/fulldataset.pkl")
             data["year"] = pd.to_datetime(data["year"], format="%Y")
+
+            # columns to drop
+            drop_cols = [
+                "travel_time_to_work",
+                "11_avg_annual_employee_pct_chg",
+                "21_avg_annual_employee_pct_chg",
+                "22_avg_annual_employee_pct_chg",
+                "23_avg_annual_employee_pct_chg",
+                "42_avg_annual_employee_pct_chg",
+                "51_avg_annual_employee_pct_chg",
+                "52_avg_annual_employee_pct_chg",
+                "53_avg_annual_employee_pct_chg",
+                "54_avg_annual_employee_pct_chg",
+                "55_avg_annual_employee_pct_chg",
+                "56_avg_annual_employee_pct_chg",
+                "61_avg_annual_employee_pct_chg",
+                "62_avg_annual_employee_pct_chg",
+                "71_avg_annual_employee_pct_chg",
+                "72_avg_annual_employee_pct_chg",
+                "81_avg_annual_employee_pct_chg",
+                "92_avg_annual_employee_pct_chg",
+                "99_avg_annual_employee_pct_chg",
+                "11_avg_annual_pay_pct_chg",
+                "21_avg_annual_pay_pct_chg",
+                "22_avg_annual_pay_pct_chg",
+                "23_avg_annual_pay_pct_chg",
+                "42_avg_annual_pay_pct_chg",
+                "51_avg_annual_pay_pct_chg",
+                "52_avg_annual_pay_pct_chg",
+                "53_avg_annual_pay_pct_chg",
+                "54_avg_annual_pay_pct_chg",
+                "55_avg_annual_pay_pct_chg",
+                "56_avg_annual_pay_pct_chg",
+                "61_avg_annual_pay_pct_chg",
+                "62_avg_annual_pay_pct_chg",
+                "71_avg_annual_pay_pct_chg",
+                "72_avg_annual_pay_pct_chg",
+                "81_avg_annual_pay_pct_chg",
+                "92_avg_annual_pay_pct_chg",
+                "99_avg_annual_pay_pct_chg",
+                "vehicles_per_person",
+                "population",
+                "household_income",
+                "home_value_median",
+                "birth_15_19_pct",
+                "birth_20_24_pct",
+                "birth_25_29_pct",
+                "birth_30_34_pct",
+                "birth_35_39_pct",
+                "birth_40_44_pct",
+                "birth_45_50_pct",
+                "grade12_nodiploma_pct",
+                "hs_diploma_pct",
+                "some_college_lessthan_1yr_pct",
+                "some_college_greaterthan_1yr_pct",
+                "bachelor_degree_pct",
+                "master_degree_pct",
+                "professional_degree_pct",
+                "doctorate_degree_pct",
+                "occupied_units_pct",
+                "vacant_units_pct",
+                "median_ppsf",
+                "annual_change_pct",
+            ]
+            data = data.drop(columns=drop_cols)
+            data = data.fillna(0)
+            data["time_idx"] = data["year"].dt.year  # * 12 + data["year"].dt.month
+            data["time_idx"] -= data["time_idx"].min()
+            data["state_fips"] = data["state_fips"].astype("str").astype("category")
         except:
             print("Check pathing.")
 
