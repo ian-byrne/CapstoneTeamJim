@@ -24,8 +24,9 @@ import torch
 # standard imports
 import numpy as np
 import pandas as pd
+import argparse
 
-# ensure the correct paths are being used here once the final model is done.
+# TODO: ensure the correct paths are being used here once the final model is done.
 def load_data(granularity="year"):
     """
     Load data for the pytorch-forecasting model.
@@ -45,6 +46,7 @@ def load_data(granularity="year"):
     """
     if granularity == "year":
         try:
+            print("Loading yearly data...")
             data = pd.read_pickle("data/fulldataset.pkl")
             data["year"] = pd.to_datetime(data["year"], format="%Y")
         except:
@@ -52,6 +54,7 @@ def load_data(granularity="year"):
 
     elif granularity == "month":
         try:
+            print("Loading monthly data...")
             data = pd.read_csv(
                 "nn_monthly_data.csv.gz", parse_dates=["period_begin", "period_end"]
             )
@@ -95,19 +98,22 @@ def load_data(granularity="year"):
     else:
         print("Please select from year or month granularity.")
 
-    return data, granularity
+    return data
 
 
-def train_model(granularity, data):
+def train_model(granularity, data, pred_period):
     """
     Train the pytorch-forecasting TemporalFusionTransformer.
 
     Parameters
     ----------
     granularity: str
-
+        Granularity for the mondel data. Can be year or month.
     data: pandas DataFrame
-
+        DataFrame that will house the training and validation data.
+    pred_period: int
+        Number of years or months you would like to predict into the future.
+        Options are 1 or 12, 2 or 24, and 3 or 36.
     Returns
     -------
 
@@ -116,6 +122,89 @@ def train_model(granularity, data):
         pass
 
     if granularity == "month":
-        pass
+        max_encoder_length = 60
+        max_prediction_length = 12
+        training_cutoff = (
+            data["time_idx"].max() - max_prediction_length
+        )  # day for cutoff
+
+        training = TimeSeriesDataSet(
+            data[lambda x: x.time_idx <= training_cutoff],
+            time_idx="time_idx",  # column name of time of observation
+            target="median_sale_price",  # column name of target to predict
+            group_ids=[
+                "county_fips",
+                "region",
+                "state",
+                "property_type",
+            ],  # column name(s) for timeseries IDs
+            max_encoder_length=max_encoder_length,  # how much history to use
+            max_prediction_length=max_prediction_length,  # how far to predict into future
+            # covariates static for a timeseries ID
+            static_categoricals=["region", "property_type", "state", "county_fips"],
+            static_reals=[],
+            # covariates known and unknown in the future to inform prediction
+            time_varying_known_categoricals=["month"],
+            time_varying_known_reals=[
+                "year",
+                "time_idx",
+                "income_tax_low",
+                "income_tax_high",
+                "corp_income_tax_low",
+                "corp_income_tax_high",
+            ],
+            time_varying_unknown_categoricals=[],
+            time_varying_unknown_reals=[
+                "median_sale_price",
+                "median_list_price",
+                "median_list_ppsf",
+                "homes_sold",
+                "pending_sales",
+                "new_listings",
+                "inventory",
+                "months_of_supply",
+                "median_dom",
+                "sold_above_list",
+                "off_market_in_two_weeks",
+            ],
+            add_relative_time_idx=True,
+            allow_missing_timesteps=True,
+            categorical_encoders={
+                "region": NaNLabelEncoder(add_nan=True),
+                "county_fips": NaNLabelEncoder(add_nan=True),
+            },
+        )
 
     return None
+
+
+def main(granularity, pred_period):
+    """Run the model with desired parameters."""
+    pass
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Runs the TemporalFusionTransformer model."
+    )
+    parser.add_argument(
+        "--granularity",
+        nargs="?",
+        default="month",
+        help="Time granularity for the model. Choose year or month, defaults to year.",
+    )
+    parser.add_argument(
+        "--pred_period",
+        nargs="?",
+        default="12",
+        help="How far out you want the model to predict. Default is 12 months.",
+    )
+
+    args = parser.parse_args()
+
+    granularity = args.granularity
+    pred_period = args.pred_period
+
+    print("Running model now...")
+    main(granularity, pred_period)
+    print("Training completed.")
