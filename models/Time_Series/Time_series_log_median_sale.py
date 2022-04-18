@@ -48,7 +48,7 @@ now = now.strftime("%d%b%Y_%Hh%M")
 def time_series():
 
     # read in the processed data
-    df=pd.read_pickle(os.path.join(root_dir,"..","data","processed","data_log_2016_2021_VARcountysubset.pkl"))
+    df=pd.read_pickle(os.path.join(root_dir,"CapstoneTeamJim","data","processed","data_log_2016_2021_VARcountysubset.pkl"))
     
     # pivot the data
     county_name = df[['county_fips','region']].drop_duplicates()
@@ -160,7 +160,7 @@ def time_series():
     pred['log_pred_errors'] = pred['log_median_sale_price']-pred['Pred_log_median_sale_price']
     hist = px.histogram(pred['log_pred_errors'],title='Histogram of residual error of model - appears normally distributed')
     
-    hist.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Hist_residual_error_model_testing.png"),width=1980, height=1080)
+    hist.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Hist_residual_error_model_testing.png"),width=1980, height=1080)
     
     
     ###  Plot residual errors  (still in log transform)
@@ -170,7 +170,7 @@ def time_series():
     # (2) they’re clustered around the lower single digits of the y-axis (e.g., 0.5 or 1.5, not 30 or 150).
     # (3) in general, there aren’t any clear patterns.
     pred_errors = px.scatter(pred,x='log_median_sale_price',y='log_pred_errors', title='Residual error clustered around middle of plot with tight range and no clear patterns')
-    pred_errors.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Scatter_residual_error_model_testing.png"),width=1980, height=1080)
+    pred_errors.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Scatter_residual_error_model_testing.png"),width=1980, height=1080)
     
     ###   Transform log predictions to original units
     
@@ -208,7 +208,7 @@ def time_series():
     # 0.9998014759535951
     
     rmse_df = pd.DataFrame(data = [[rmse_calc,r2_calc]], columns = ['RMSE','R^2 Score'])
-    rmse_df.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","rmse_time_2022.csv"),index=False)
+    rmse_df.to_csv(os.path.join(root_dir,"CapstoneTeamJim","reports","results","Time_Series","rmse_time_2022.csv"),index=False)
     
     
     MSE_r2 = go.Figure(data=[go.Table(
@@ -228,7 +228,7 @@ def time_series():
         
     MSE_r2.update_layout(title_text = "Model error for 2022 Predictions", width=500, height=300)
     MSE_r2.show()
-    MSE_r2.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Table_Time_series_model_error_2022_predictions.png"),width=500, height=300)
+    MSE_r2.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Table_Time_series_model_error_2022_predictions.png"),width=500, height=300)
     
    
     
@@ -290,7 +290,7 @@ def time_series():
     
     summary2022prediction.columns = ['FIPS','County','Median Sale Price 2021','Predicted Median Sale Price 2022','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase',]
     
-    summary2022prediction.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Summary_2022_Predictions.csv"),index=False)
+    summary2022prediction.to_csv(os.path.join(root_dir,"CapstoneTeamJim","reports","results","Time_Series","Summary_2022_Predictions.csv"),index=False)
     
     
     with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
@@ -307,7 +307,7 @@ def time_series():
                               )
     
     Pred2022_plot.show()
-    Pred2022_plot.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_Summary_all_counties2022_predictions.png"),width=1980, height=1080)
+    Pred2022_plot.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Choro_Summary_all_counties2022_predictions.png"),width=1980, height=1080)
     
     
     Top_10_Pred2022_plot = px.choropleth(summary2022prediction[0:10], geojson=counties, locations='FIPS', color='Median Sale Price % increase',
@@ -321,7 +321,7 @@ def time_series():
                               )
     
     Top_10_Pred2022_plot.show()
-    Top_10_Pred2022_plot.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_Summary_top10_counties_2022_predictions.png"),width=1980, height=1080)
+    Top_10_Pred2022_plot.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Choro_Summary_top10_counties_2022_predictions.png"),width=1980, height=1080)
 
 if __name__ == "__main__":
     time_series()

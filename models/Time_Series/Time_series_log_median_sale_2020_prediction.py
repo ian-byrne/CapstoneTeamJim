@@ -20,12 +20,10 @@ root_dir = definitions.root_directory()
 
 
 from statsmodels.tsa.stattools import adfuller
-
+from statsmodels.tsa.stattools import grangercausalitytests
 
 from statsmodels.tsa.api import VAR
-from statsmodels.tsa.vector_ar.var_model import VARResults, VARResultsWrapper
 
-from statsmodels.tsa.stattools import grangercausalitytests
 from  sklearn.metrics import mean_squared_error, r2_score
 
 
@@ -50,7 +48,7 @@ now = now.strftime("%d%b%Y_%Hh%M")
 
 #%%
 def time_series_2020():
-    df=pd.read_pickle(os.path.join(root_dir,"..","data","processed","data_log_2016_2021_VARcountysubset.pkl"))
+    df=pd.read_pickle(os.path.join(root_dir,"CapstoneTeamJim","data","processed","data_log_2016_2021_VARcountysubset.pkl"))
     
     county_name = df[['county_fips','region']].drop_duplicates()
     df_pivot = df.pivot(index='date',columns='county_fips',values='log_median_sale_price')
@@ -131,11 +129,11 @@ def time_series_2020():
     # calculate the log_errors
     pred['log_pred_errors'] = pred['log_median_sale_price']-pred['Pred_log_median_sale_price']
     
-    pred.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Data_hist_scatter_2020Predictions.csv"),index=False)
+    pred.to_csv(os.path.join(root_dir,"CapstoneTeamJim","reports","results","Time_Series","Data_hist_scatter_2020Predictions.csv"),index=False)
     
     hist = px.histogram(pred['log_pred_errors'],title='Histogram of residual error of model - appears normally distributed')
     hist.show()
-    hist.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Hist_residual_error_model_testing_2020Pred.png"),width=1980, height=1080)
+    hist.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Hist_residual_error_model_testing_2020Pred.png"),width=1980, height=1080)
     
     
     ###  Plot residual errors  (still in log transform)
@@ -150,7 +148,7 @@ def time_series_2020():
     # (3) in general, there aren’t any clear patterns.
     pred_errors = px.scatter(pred,x='log_median_sale_price',y='log_pred_errors', title='Residual error clustered around middle of plot with tight range and no clear patterns')
     pred_errors.show()
-    pred_errors.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Scatter_residual_error_model_testing_2020Pred.png"),width=1980, height=1080)
+    pred_errors.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Scatter_residual_error_model_testing_2020Pred.png"),width=1980, height=1080)
     
     ###   Transform log predictions to original units
     
@@ -176,7 +174,7 @@ def time_series_2020():
     Predictions2020['error_pct'] = np.absolute(Predictions2020['error'])/Predictions2020['County_mean']*100
     
     # import counties only in ACS dataset for comparison to other models
-    acs_counties = pd.read_csv(os.path.join(root_dir,"..","data","processed","VAR_ACS_counties.txt"), dtype='str')
+    acs_counties = pd.read_csv(os.path.join(root_dir,"CapstoneTeamJim","data","processed","VAR_ACS_counties.txt"), dtype='str')
     acs_counties['county_fips'] = acs_counties['county_fips'].astype(str)
         
     # Filter for counties only in ACS
@@ -192,7 +190,7 @@ def time_series_2020():
     # 0.9999723762765845
     
     rmse_df = pd.DataFrame(data = [[rmse_calc,r2_calc]], columns = ['RMSE','R^2 Score'])
-    rmse_df.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","rmse_time_2020.csv"),index=False)
+    rmse_df.to_csv(os.path.join(root_dir,"CapstoneTeamJim","reports","results","Time_Series","rmse_time_2020.csv"),index=False)
     
     
     MSE_r2 = go.Figure(data=[go.Table(
@@ -212,7 +210,7 @@ def time_series_2020():
         
     MSE_r2.update_layout(title_text = "Model error for 2020 Predictions",width=500, height=300)
     MSE_r2.show()
-    MSE_r2.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Table_Time_series_model_error_2020_predictions.png"),width=500, height=300)
+    MSE_r2.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Table_Time_series_model_error_2020_predictions.png"),width=500, height=300)
     
     
     
@@ -268,7 +266,7 @@ def time_series_2020():
     
     summary2020prediction.columns = ['FIPS','County','Median Sale Price 2019','Predicted Median Sale Price 2020','Lower 95% Prediction Inverval','Upper 95% Prediction Inverval','Median Sale Price increase','Median Sale Price % increase']
     
-    summary2020prediction.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Summary_2020_Predictions.csv"),index=False)
+    summary2020prediction.to_csv(os.path.join(root_dir,"CapstoneTeamJim","reports","results","Time_Series","Summary_2020_Predictions.csv"),index=False)
     
     
     
@@ -287,7 +285,7 @@ def time_series_2020():
                               )
     
     forecasted_pct.show()
-    forecasted_pct.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_all_ACS_counties_pred_2020Pred.png"),width=1980, height=1080)
+    forecasted_pct.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Choro_all_ACS_counties_pred_2020Pred.png"),width=1980, height=1080)
         
     top_cnt = px.choropleth(summary2020prediction[0:10], geojson=counties, locations='FIPS', color='Median Sale Price % increase',
                                color_continuous_scale="Viridis",
@@ -300,7 +298,7 @@ def time_series_2020():
                               )
     # fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     top_cnt.show()
-    top_cnt.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_top10_ACS_counties_pred_2020Pred.png"),width=1980, height=1080)
+    top_cnt.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Choro_top10_ACS_counties_pred_2020Pred.png"),width=1980, height=1080)
     
     
     
@@ -332,7 +330,7 @@ def time_series_2020():
     Predictions2020.columns = ['FIPS','Predicted Median Sale Price 2020','Median Sale Price 2020','County','Forecast error','Forecast error %']
     Predictions2020['Predicted Median Sale Price 2020'] = Predictions2020['Predicted Median Sale Price 2020'].map("${:,.0f}".format)
     Predictions2020['Forecast error %'] = Predictions2020['Forecast error %'].round(2)
-    Predictions2020.to_csv(os.path.join(root_dir,"..","reports","results","Time_Series","Prediction_error_2020.csv"),index=False)
+    Predictions2020.to_csv(os.path.join(root_dir,"CapstoneTeamJim","reports","results","Time_Series","Prediction_error_2020.csv"),index=False)
     
     
     Pred2020_error = px.choropleth(Predictions2020, geojson=counties, locations='FIPS', color='Forecast error %',
@@ -345,7 +343,7 @@ def time_series_2020():
                               )
     
     Pred2020_error.show()
-    Pred2020_error.write_image(os.path.join(root_dir,"..","reports","figures","Time_Series","Choro_average_pred_error_2020.png"),width=1980, height=1080)
+    Pred2020_error.write_image(os.path.join(root_dir,"CapstoneTeamJim","reports","figures","Time_Series","Choro_average_pred_error_2020.png"),width=1980, height=1080)
     
 if __name__ == "__main__":
     time_series_2020()
