@@ -169,7 +169,7 @@ def load_data(granularity="year"):
 
     return data
 
-
+#TODO: Adjust functionality if I don't get to all the features.
 def train_model(granularity, data, pred_period):
     """
     Train the pytorch-forecasting TemporalFusionTransformer.
@@ -188,7 +188,56 @@ def train_model(granularity, data, pred_period):
 
     """
     if granularity == "year":
-        pass
+        # define the dataset, i.e. add metadata to pandas dataframe for the model to understand it
+        max_encoder_length = 3
+        max_prediction_length = 1
+        training_cutoff = (
+            data["time_idx"].max() - max_prediction_length
+        )  # day for cutoff
+
+        training = TimeSeriesDataSet(
+            data[lambda x: x.time_idx <= training_cutoff],
+            time_idx="time_idx",  # column name of time of observation
+            target="median_sale_price",  # column name of target to predict
+            group_ids=[
+                "state_fips",
+                "county_fips",
+            ],  # column name(s) for timeseries IDs
+            max_encoder_length=max_encoder_length,  # how much history to use
+            max_prediction_length=max_prediction_length,  # how far to predict into future
+            # covariates static for a timeseries ID
+            static_categoricals=["state_fips", "county_fips"],
+            static_reals=[],
+            # covariates known and unknown in the future to inform prediction
+            time_varying_known_categoricals=[],
+            time_varying_known_reals=[
+                "income_tax_low",
+                "income_tax_high",
+                "corp_income_tax_low",
+                "corp_income_tax_high",
+            ],
+            time_varying_unknown_categoricals=[],
+            time_varying_unknown_reals=[
+                "debt_ratio_low",
+                "debt_ratio_high",
+                "median_sale_price",
+                "median_list_price",
+                "median_list_ppsf",
+                "homes_sold",
+                "new_listings",
+                "inventory",
+                "months_of_supply",
+                "median_dom",
+                "avg_sale_to_list",
+                "sold_above_list",
+                "gdp",
+            ],
+            add_relative_time_idx=True,
+            allow_missing_timesteps=True,
+            categorical_encoders={"county_fips": NaNLabelEncoder(add_nan=True)},
+            add_target_scales=True,
+            add_encoder_length=True,
+        )
 
     if granularity == "month":
         max_encoder_length = 60
