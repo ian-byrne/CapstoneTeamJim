@@ -1,32 +1,17 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import pickle
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.impute import KNNImputer
 from sklearn.model_selection import train_test_split
-
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.datasets import make_regression
-
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import ExtraTreesRegressor
 
 import plotly.graph_objects as go
 import plotly.express as px
-from plotly.subplots import make_subplots
-import plotly.io as pio
-# render plot in default browser
-pio.renderers.default = 'browser'
 import seaborn as sns
 
 import warnings
 warnings.filterwarnings("ignore")
-
-from config import definitions
-import os
 
 from urllib.request import urlopen
 import json
@@ -36,9 +21,7 @@ with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-c
 def tree_model():
     ## read data 
 
-    root_dir = definitions.root_directory()
-
-    df = pd.read_pickle(os.path.join(root_dir,"..","data","processed","fulldataset.pkl"))
+    df = pd.read_pickle("data/processed/fulldataset.pkl")
     df = df.sort_values(by=['county_fips', 'year']).reset_index(drop=True)
 
     ## isolate target column
@@ -54,7 +37,7 @@ def tree_model():
 
     ## only use counties available in other models
 
-    with open(os.path.join(root_dir,"..","data","processed","VAR_counties.txt"), 'r') as f:
+    with open("data/processed/VAR_counties.txt", 'r') as f:
         lines = f.readlines()
 
     VAR_counties = []
@@ -82,9 +65,6 @@ def tree_model():
     et = ExtraTreesRegressor(max_depth=15, n_estimators=500, random_state=0).fit(
         X_train, y_train)
 
-    # filename = 'tree_model1.pkl'
-    # pickle.dump(et, open(filename, 'wb'))
-
     test_score = round(et.score(X_test, y_test), 3)
     val_score = round(et.score(X_val, y_val), 3)
 
@@ -93,6 +73,8 @@ def tree_model():
     d = {'Feature': X.columns, 'Importance': et.feature_importances_}
     feature_df = pd.DataFrame(d)
     feature_df = feature_df.sort_values(by='Importance', ascending=False).reset_index(drop=True)
+
+    feature_df.to_csv("streamlit/data/tree_model1_features.csv")
 
     fig = px.bar_polar(feature_df.iloc[:30,:], r='Importance', theta='Feature',
                 color='Feature', template='plotly_dark',
@@ -104,7 +86,7 @@ def tree_model():
                   font=dict(size = 18),
                   margin = {'t':50, 'b':50, 'l':50, 'r':50})
 
-    fig.write_image("../../reports/figures/Supervised/tree_model1_feature_importances.png")
+    fig.write_image("reports/figures/Supervised/tree_model1_feature_importances.png")
 
     ## chart of prediction delta
 
@@ -122,7 +104,7 @@ def tree_model():
                             title='Prediction Delta 2019 Predicting 2020 to Actual 2020 Values'
                             )
 
-    fig.write_image("../../reports/figures/Supervised/tree_model1_prediciton_delta.png",width=1980, height=1080)
+    fig.write_image("reports/figures/Supervised/tree_model1_prediciton_delta.png",width=1980, height=1080)
 
     ## calculate rmse
 
@@ -132,12 +114,13 @@ def tree_model():
     fig = go.Figure(data=[go.Table(header=dict(values=['Test R2', '2019 Validation R2', '2019 RMSE']),
                     cells=dict(values=[[test_score], [val_score], [rmse]]))
                         ])
-    fig.write_image("../../reports/figures/Supervised/tree_model1_scores.png", width=500, height=300)
+    fig.write_image("reports/figures/Supervised/tree_model1_scores.png", width=500, height=300)
 
     corr_df = df[['home_value_median', 'median_ppsf', 'median_list_price', 'median_list_ppsf', 'median_sale_price']]
+    corr_df.to_csv("streamlit/data/correlation_matrix.csv")
     mask = np.triu(np.ones_like(corr_df.corr(), dtype=np.bool))
     sns.heatmap(corr_df.corr(), mask=mask, annot=True, cmap='RdPu')
-    plt.savefig('../../reports/figures/Supervised/tree_model1_correlation_matrix.png', width=500, height=300, bbox_inches="tight")
+    plt.savefig('reports/figures/Supervised/tree_model1_correlation_matrix.png', width=500, height=300, bbox_inches="tight")
 
     ## model2 with highly correlated features removed
 
@@ -159,9 +142,6 @@ def tree_model():
     et = ExtraTreesRegressor(max_depth=15, n_estimators=500, random_state=0).fit(
         X_train, y_train)
 
-    # filename = 'tree_model2.pkl'
-    # pickle.dump(et, open(filename, 'wb'))
-
     test_score = round(et.score(X_test, y_test), 3)
     val_score = round(et.score(X_val, y_val), 3)
 
@@ -170,6 +150,8 @@ def tree_model():
     d = {'Feature': X.columns, 'Importance': et.feature_importances_}
     feature_df = pd.DataFrame(d)
     feature_df = feature_df.sort_values(by='Importance', ascending=False).reset_index(drop=True)
+
+    feature_df.to_csv("streamlit/data/tree_model2_features.csv")
 
     fig = px.bar_polar(feature_df.iloc[:30,:], r='Importance', theta='Feature',
                 color='Feature', template='plotly_dark',
@@ -181,32 +163,47 @@ def tree_model():
                   font=dict(size = 18),
                   margin = {'t':50, 'b':50, 'l':50, 'r':50})
 
-    fig.write_image("../../reports/figures/Supervised/tree_model2_feature_importances.png")
+    fig.write_image("reports/figures/Supervised/tree_model2_feature_importances.png")
 
     ## chart of prediction delta
 
     pred2019 = et.predict(X_val)
     data2019['Predicted_sale_price_change'] = pred2019
     data2019['Prediction_delta'] = ((data2019['median_sale_price'] - data2019['Predicted_sale_price_change'])/data2019['median_sale_price'])*100
+    data2019 = data2019[['county_fips', 'median_sale_price', 'Predicted_sale_price_change', 'Prediction_delta']]
+    data2019['percent_error'] = np.absolute(data2019['Prediction_delta'])/data2019['median_sale_price']*100
+    data2019.columns = ['FIPS', 'Median Sale Price 2020', 'Predicted', 'error', '2020 % Forecast Error']
+    county_names = pd.read_csv('data/processed/county_names.csv', header=1)
+    data2019['FIPS'] = data2019['FIPS'].apply(lambda x: int(x))
+    county_names['FIPS'] = county_names['FIPS'].apply(lambda x: int(x))
+    county_names['County'] = county_names['name'].astype(str) + ', ' + county_names['state'].astype(str)
 
-    fig = px.choropleth(data2019, geojson=counties, locations='county_fips', color='Prediction_delta',
+    data2019 = data2019.merge(county_names, how='left', on='FIPS')
+    data2019['Predicted Median Sale Price 2020'] = data2019['Predicted'].apply(lambda x: "${:,.0f}".format(x))
+    data2019['2020 % Forecast Error'] = data2019['2020 % Forecast Error'].apply(lambda x: round(x, 3))
+    data2019.to_csv("streamlit/data/prediction_map.csv", index=False)
+
+    fig = px.choropleth(data2019, geojson=counties, locations='FIPS', color='2020 % Forecast Error',
                             color_continuous_scale="Viridis",
                                 range_color=(0, 100),
+                            hover_name = 'County',
+                            hover_data =['Predicted Median Sale Price 2020'],
                             scope="usa",
-                            labels={'Prediction_delta':'Prediction delta for 2019 HPI'}
+                            labels={'Forecast error %':'2020 % Forecast error'},
+                            title = 'Average forecast error by ACS county for 2020 prediction'
                             )
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-    fig.write_image("../../reports/figures/Supervised/tree_model2_prediciton_delta.png", width=500, height=300)
+    fig.write_image("reports/figures/Supervised/tree_model2_prediciton_delta.png", width=500, height=300)
 
     ## calculate rmse
 
-    rmse = '$'+str(round(mean_squared_error(data2019['median_sale_price'], data2019['Predicted_sale_price_change'], squared=False)))
+    rmse = '$'+str(round(mean_squared_error(data2019['Median Sale Price 2020'], data2019['Predicted'], squared=False)))
 
 
     fig = go.Figure(data=[go.Table(header=dict(values=['Test R2', '2019 Validation R2', '2019 RMSE']),
                     cells=dict(values=[[test_score], [val_score], [rmse]]))
                         ])
-    fig.write_image("../../reports/figures/Supervised/tree_model2_scores.png", width=500, height=300)
+    fig.write_image("reports/figures/Supervised/tree_model2_scores.png", width=500, height=300)
 
     print("All models and images have been exported")
 
