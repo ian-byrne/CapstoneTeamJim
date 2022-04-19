@@ -83,7 +83,7 @@ if choice == "Home":
 
 if choice == "Supervised":
     st.header("Supervised Model")
-    st.write("""Tree Analysis post.""")
+    st.write("""Supervised learning allows for custom model fit. Tree models in particular are able to handle a variety of data types. This model is the only one able to incorporate demographic data from ACS.""")
     model1()
 
 if choice == "Time Series":
