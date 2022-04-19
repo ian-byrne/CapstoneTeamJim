@@ -27,17 +27,18 @@ if choice == "Home":
     st.subheader("About:")
     st.write(
         """With this app the authors indend to the user to be able to follow along
-        with design choices made in each model and view our results."""
-    )
-    st.write(
-        """
+        with design choices made in each model and view our results.
+    """)
+    st.write("""
     Welcome to the **Real Estate investment region analysis Capstone Project** for our Master of
-    Applied Data Science from the University of Michigan School of Information!
-
+    Applied Data Science from the University of Michigan School of Information!  
+               """) 
+    st.write("""
     The authors Jenny Ney, Ian Byrne, and Melanie Starr formed their Capstone Team JIM
     with the intent of creating a framework to predict the direction of real estate
     markets after discussing a common interest in real estate investment.
-
+        """)
+    st.write("""
     #### Data:
 
     In preparation for and during the early stages of the project, we identified open
@@ -52,12 +53,15 @@ if choice == "Home":
 *  Redfin real estate data
 *  Unemployment Rates
 *  GDP
+        """)
 
+    st.write("""
     These data sources were originally stored in a Postgres database, however depending
     on when you are viewing this, that database may or may not be available. All data
     used within the final models of the project presented here can be found in the
     github repository https://github.com/ian-byrne/CapstoneTeamJim
-
+        """)
+    st.write("""
     #### Project:
 
     We each selected a model type that interested us and proved to test well on our

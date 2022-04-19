@@ -20,7 +20,7 @@ def conclusion():
     
     st.write("We can fit all the data from 2016 to 2021 and predict the median sale price by county for 2022 and calculate the 95% confidence intervals.")
     
-    summary2022prediction = pd.read_csv("data/Summary_2022_Predictions.csv")    
+    summary2022prediction = pd.read_csv("streamlit/data/Summary_2022_Predictions.csv")    
     
     with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
         counties = json.load(response)
