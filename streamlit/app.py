@@ -43,24 +43,30 @@ if choice == "Home":
     In preparation for and during the early stages of the project, we identified open
     source data that would help us potentially make predictions on county home values.
     We ended up using the following resources in some form or another during the
-    project: *insert data gathered*
+    project: 
+        
+*  Bureau of Labor Statistics wage data
+*  American Community Survey demographic data
+*  County Debt Ratio
+*  State Personal and Corporate Income Tax rates
+*  Redfin real estate data
+*  Unemployment Rates
+*  GDP
 
     These data sources were originally stored in a Postgres database, however depending
     on when you are viewing this, that database may or may not be available. All data
     used within the final models of the project presented here can be found in the
-    *github repo/drive/etc*
+    github repository https://github.com/ian-byrne/CapstoneTeamJim
 
     #### Project:
 
     We each selected a model type that interested us and proved to test well on our
-    preliminary data. This led to a Vector Autoregression (VAR) model, Tree model using
-    the ExtraTreesRegressor, and *LSTM (confirm this)* based Transformer model being used in the project.
+    preliminary data. This led to a time series Vector Autoregression (VAR) model, a supervised ExtraTreesRegressor model, and neural network Transformer model being used in the project.
     We looked at several targets for each region, honing in on median sale price and the
     Home Price Index. As you will see, some models did better or worse depending on the
     target metric and the time granularity. In preparation for and in the early stages
     of the project, we identified open source data that would help us potentially
-    make predictions on county home values. We ended up using the following resources
-    in some form or another during the project: *insert data used*
+    make predictions on county home values. 
 
     """
     )
