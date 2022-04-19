@@ -94,8 +94,8 @@ if choice == "Home":
         - `pytorch-lightning==1.6.0`
         - `pytorch-forecasting==0.10.1`
         - `plotly>=5.6.0,<=5.7.0`
-        - `ADD OTHER PACKAGES IF NECESSARY`
-        """  # TODO: Add other packages if needed
+        - `seaborn==0.11.2`
+        """  # TODO: Add other packages if needed - seaborn
         )
 
 if choice == "Supervised":
