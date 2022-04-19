@@ -3,7 +3,6 @@ Main module for display of the Capstone project for Team JIM.
 """
 import streamlit as st
 import warnings
-from streamlit.model_three import pytorch_writeup
 from utils import load_data
 
 
