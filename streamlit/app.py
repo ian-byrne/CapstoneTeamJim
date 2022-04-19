@@ -45,14 +45,15 @@ if choice == "Home":
     source data that would help us potentially make predictions on county home values.
     We ended up using the following resources in some form or another during the
     project: 
-        
-*  Bureau of Labor Statistics wage data
-*  American Community Survey demographic data
+                """)
+    st.write("""        
+*  Bureau of Labor Statistics Wage Data
+*  American Community Survey Demographic Data
 *  County Debt Ratio
-*  State Personal and Corporate Income Tax rates
-*  Redfin real estate data
+*  State Personal and Corporate Income Tax Rates
+*  Redfin Real Estate Data
 *  Unemployment Rates
-*  GDP
+*  World Bank GDP Data
         """)
 
     st.write("""
@@ -66,9 +67,7 @@ if choice == "Home":
 
     We each selected a model type that interested us and proved to test well on our
     preliminary data. This led to a time series Vector Autoregression (VAR) model, a supervised ExtraTreesRegressor model, and neural network Transformer model being used in the project.
-    We looked at several targets for each region, honing in on median sale price and the
-    Home Price Index. As you will see, some models did better or worse depending on the
-    target metric and the time granularity. In preparation for and in the early stages
+    We looked at several targets for each region, honing in on median sale price.As you will see, some models did better or worse depending on the target metric and the time granularity. In preparation for and in the early stages
     of the project, we identified open source data that would help us potentially
     make predictions on county home values. 
 

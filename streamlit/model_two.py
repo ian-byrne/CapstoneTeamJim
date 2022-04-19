@@ -310,4 +310,13 @@ This tells us that the model is learning very well.
                   )])
     
     top10table.update_layout(width=1000, height=700)
-    st.plotly_chart(top10table,use_container_width=True)    
+    st.plotly_chart(top10table,use_container_width=True) 
+    
+    with st.expander("References"):
+        st.write(
+            """
+        - https://www.statsmodels.org/stable/generated/statsmodels.tsa.vector_ar.var_model.VAR.html
+        - https://www.qualtrics.com/support/stats-iq/analyses/regression-guides/interpreting-residual-plots-improve-regression/
+        - https://stats.stackexchange.com/questions/55692/back-transformation-of-an-mlr-model
+        """ 
+        )
