@@ -1,97 +1,46 @@
-"""Script designed to run the pytorch model for Team JIM Capstone."""
+"""Script designed to display the pytorch model write up for Team JIM Capstone."""
 # standard imports
+from re import I
 import streamlit as st
 import pandas as pd
 import numpy as np
-import warnings
-from utils import load_data
+import json
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.io as pio
 
-# imports for training
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import TensorBoardLogger
-from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
 
-# import dataset, network to train and metric to optimize
-from pytorch_forecasting import (
-    Baseline,
-    TimeSeriesDataSet,
-    TemporalFusionTransformer,
-    QuantileLoss,
-    RMSE,
-    MAE,
-    MAPE,
-    MASE,
-    SMAPE,
-)
-from pytorch_forecasting.data import TimeSeriesDataSet, GroupNormalizer, NaNLabelEncoder
-import torch
+def pytorch_writeup():
 
-warnings.filterwarnings("ignore")  # avoid printing out absolute paths
+    with urlopen(
+        "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json"
+    ) as response:
+        counties = json.load(response)
 
-# add ability to run model if desired, not required.
-def run_nn_model(period):
-    """
-    Run the pytorch forecasting model(s).
-    """
-    # st.write("Model 3 running...")
+    preds = pd.read_csv("data/monthly2021_pytorch_pred_allresidential.csv")
 
-    # LOADING and DEFINING DATA
-    if period == "Yearly":
-        # load the yearly data
-        st.write("Loading yearly data!")
-        # TODO: Add the yearly data loading func from utils
-        data["year"] = pd.to_datetime(data["year"], format="%Y")
-        # set time index
-        data["time_idx"] = data["year"].dt.year  # * 12 + data["year"].dt.month
-        data["time_idx"] -= data["time_idx"].min()
-        data["state_fips"] = data["state_fips"].astype("str").astype("category")
-        data = None
+    st.header("Temporal Fusion Transformer ")
+    st.write("Below is the histogram of residual error")
 
-        # define the dataset, add metadata to pandas dataframe for model understanding
-        max_encoder_length = 4
-        max_prediction_length = 1
-        training_cutoff = (
-            data["time_idx"].max() - max_prediction_length
-        )  # day for cutoff
+    # TODO: confirm with melanie how she made her df for his data
+    hist = px.histogram(
+        preds["target-prediction"], title="Histogram of residual error of model"
+    )
 
-        training = None
-        validation = None
-        pass
+    st.plotly_chart(hist, use_container_width=True)
 
-    if period == "Monthly":
-        # load the monthly data
-        # TODO: Add the monthly data loading func from utils
-        st.write("Loading monthly data!")
-        data = None
-        training = None
-        validation = None
-        pass
+    st.write("Below is the predictions error for all counties")
 
-    # validation = TimeSeriesDataSet.from_dataset(
-    #     training,
-    #     data,
-    #     predict=True,
-    #     min_prediction_idx=training.index.time.max() + 1,
-    #     stop_randomization=True,
-    # )
+    # Pred2021_error = px.choropleth(preds, geojson=counties, locations='FIPS', color='Forecast error %',
+    #                         color_continuous_scale="Viridis",
+    #                         hover_name = 'County',
+    #                         hover_data =['Predicted Median Sale Price 2020'],
+    #                         scope="usa",
+    #                         labels={'Forecast error %':'2020 % Forecast error'},
+    #                         title = 'Average forecast error by ACS county for 2020 prediction,
+    #                                with most counties having less error than 5%'
+    #                       )
 
-    # # convert datasets to dataloaders for training
-    # batch_size = 128
-    # train_dataloader = training.to_dataloader(
-    #     train=True, batch_size=batch_size, num_workers=2
-    # )
-    # val_dataloader = validation.to_dataloader(
-    #     train=False,
-    #     batch_size=batch_size * 10,
-    #     num_workers=2,  # double check factor of 10 will work
-    # )
+    #st.plotly_chart(Pred2021_error, use_container_width=True)
 
-    # # RUNNING MODEL
-    # # baseline
-    # actuals = torch.cat([y for x, (y, weight) in iter(val_dataloader)])
-    # baseline_predictions = Baseline().predict(val_dataloader)
-    # (actuals - baseline_predictions).abs().mean().item()
-
-    # st.success("Model successfully run!")
-
-    # generate charts to display
