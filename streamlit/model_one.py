@@ -143,6 +143,12 @@ def model1():
 
                  
               """) 
+    with st.expander("References"):
+        st.write(
+            """
+        - `https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html'
+        """  # TODO: Add other packages if needed
+        )
 
 
 
