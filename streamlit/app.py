@@ -12,8 +12,7 @@ warnings.filterwarnings("ignore")  # avoid printing out absolute paths
 # the below imports are subject to change based on the final form of modules.
 from model_one import model1
 from model_two import model2
-
-# from model_three import run_nn_model
+from model_three import pytorch_writeup
 from conclusion import conclusion
 
 
