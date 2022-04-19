@@ -26,7 +26,7 @@ def model1():
 
     st.write("Our first iteration of this model yielded extremely strong results with a test R2 of 0.973 and validation R2 of 0.951. Such high scores were somewhat suspect and further explained by examining the features importances:")
 
-    feature_df1 = pd.read_csv("data/tree_model1_features.csv")
+    feature_df1 = pd.read_csv("ian-byrne/capstoneteamjim/main/streamlit/data/tree_model1_features.csv")
 
     fig = px.bar_polar(feature_df1.iloc[:30,:], r='Importance', theta='Feature',
                 color='Feature', template='plotly_dark',
@@ -36,7 +36,7 @@ def model1():
 
     st.write("The top four features in the model are median home value, median price per square foot, median list price per square foot, and median list price. We suspected high correlation with the outcome variable, median sale price, and confirmed via correlation matrix:")
 
-    corr_df = pd.read_csv("data/correlation_matrix.csv").drop("Unnamed: 0", axis=1)
+    corr_df = pd.read_csv("ian-byrne/capstoneteamjim/main/streamlit/data/correlation_matrix.csv").drop("Unnamed: 0", axis=1)
     corr_df.columns = ['median home value', 'median price per square foot', 'median list price', 'median list price per square foot', 'median sale price']
     mask = np.triu(np.ones_like(corr_df.corr(), dtype=np.bool))
     fig, ax = plt.subplots()
@@ -48,7 +48,7 @@ def model1():
 
     st.write("The feature importances show much different results in this iteration:")
 
-    feature_df2 = pd.read_csv("data/tree_model2_features.csv")
+    feature_df2 = pd.read_csv("ian-byrne/capstoneteamjim/main/streamlit/data/tree_model2_features.csv")
 
     fig = px.bar_polar(feature_df2.iloc[:30,:], r='Importance', theta='Feature',
                 color='Feature', template='plotly_dark',
@@ -60,7 +60,7 @@ def model1():
 
     st.write("A plot of counties along with the predicted and real values in 2020 is shown below:")
 
-    data2019 = pd.read_csv("data/prediction_map.csv")
+    data2019 = pd.read_csv("ian-byrne/capstoneteamjim/main/streamlit/data/prediction_map.csv")
 
     with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
         counties = json.load(response)
