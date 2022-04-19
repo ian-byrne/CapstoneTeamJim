@@ -17,12 +17,14 @@ def pytorch_writeup():
         "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json"
     ) as response:
         counties = json.load(response)
-
+    # TODO: filter the dataframe to "all residential"
     preds = pd.read_csv("streamlit/data/pytorch_monthly2021_preds.csv")
 
     st.header("Temporal Fusion Transformer ")
-
+    # TODO: Intro write up
     st.write("Intro Text")
+
+    # TODO: Overview of tft
     ##############################################################
 
     st.write("Below is the histogram of residual error")
@@ -47,15 +49,44 @@ def pytorch_writeup():
 
     ###############################################################
     # TODO: add results from yearly and monthly models here, make df
-    # res_v_base = pd.DataFrame()
+    res_v_base_yr = pd.DataFrame(
+        {
+            "Metric": ["MAE", "RMSE", "R^2"],
+            "Model": [41443.996, 98713.62, 0.729],
+            "Baseline": [59424.094, 113088.3, 0.645],
+        }
+    )
+    res_v_base_mo = pd.DataFrame(
+        {
+            "Metric": ["MAE", "RMSE", "R^2"],
+            "Model": [42026.887, 115940.914, 0.787],
+            "Baseline": [54858.941, 159162.2, 0.599],
+        }
+    )
 
     ###############################################################
     # TODO: 2021 test results chloropleth
 
-    ###############################################################
-    # TODO: 2020 predictions if time permits
+    # pred_error = px.choropleth(
+    #     preds,
+    #     geojson=counties,
+    #     locations="FIPS",
+    #     color="diff",
+    #     color_continuous_scale="Viridis",
+    #     hover_name="Region",
+    #     hover_data=["Predicted Median Sale Price 2020"],
+    #     scope="usa",
+    #     labels={"Forecast error %": "2020 % Forecast error"},
+    #     title="Average forecast error by ACS county for 2020 prediction, with most counties having less error than 2%",
+    # )
+    # pred_error.update_layout(height=500)
+    # st.plotly_chart(pred_error, use_container_width=True)
 
     ###############################################################
+    # TODO: 2022 predictions if time permits
+
+    ###############################################################
+    # TODO: Conclusion of the model
 
     ###############################################################
     # TODO: References
