@@ -64,7 +64,7 @@ def model2():
 
 
 
-    st.image("data/model_2_df.png", caption="Dataset showig the first year of values", width=None, use_column_width=True, clamp=False, channels="RGB", output_format="auto")
+    st.image("streamlit/data/model_2_df.png", caption="Dataset showig the first year of values", width=None, use_column_width=True, clamp=False, channels="RGB", output_format="auto")
 
 
     st.write(""" #           
@@ -129,7 +129,7 @@ forecasts = var_res.forecast(df_2diff_log.values,steps=num_forecasts)
              
               """) 
               
-    pred = pd.read_csv("data/Data_hist_scatter_2020Predictions.csv")    
+    pred = pd.read_csv("streamlit/data/Data_hist_scatter_2020Predictions.csv")    
     
     hist = px.histogram(pred['log_pred_errors'],
                         title='Histogram of residual error of model',
@@ -201,7 +201,7 @@ This tells us that the model is learning very well.
                          
            """) 
                
-    rmse_df = pd.read_csv("data/rmse_time_2020.csv")   
+    rmse_df = pd.read_csv("streamlit/data/rmse_time_2020.csv")   
     
     MSE_r2 = go.Figure(data=[go.Table(
                 header=dict(values=['RMSE','R^2 Score'],
@@ -226,7 +226,7 @@ This tells us that the model is learning very well.
              The error by county can be plotted on a map as a percentage of the median sales price.  You can see below that most counties are below 2% error.
                """) 
                
-    Predictions2020 = pd.read_csv("data/Prediction_error_2020.csv")    
+    Predictions2020 = pd.read_csv("streamlit/data/Prediction_error_2020.csv")    
     
     with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
         counties = json.load(response)
@@ -250,7 +250,7 @@ This tells us that the model is learning very well.
              
              """)
 
-    summary2020prediction = pd.read_csv("data/Summary_2020_Predictions.csv")    
+    summary2020prediction = pd.read_csv("streamlit/data/Summary_2020_Predictions.csv")    
     
     st.write(""" #           
              
