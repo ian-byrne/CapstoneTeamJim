@@ -308,7 +308,33 @@ def pytorch_writeup():
 
     ###############################################################
     # TODO: display 2020 top 10 predictions
-    # 2020preds = pd.read_csv()
+    preds2020 = pd.read_csv("streamlit/data/tft_top10_2020.csv")
+    top10table = go.Figure(
+        data=[
+            go.Table(
+                header=dict(
+                    values=["County", "2020 Price % increase over 2019"],
+                    line_color="darkslategray",
+                    fill_color="#3366CC",
+                    align=["center", "center"],
+                    font=dict(color="white", size=20),
+                    height=40,
+                ),
+                cells=dict(
+                    values=[preds2020["region"], preds2020["2019to2020increase"]],
+                    line_color="darkslategray",
+                    fill=dict(color=["white", "white"]),
+                    align=["center", "center"],
+                    font_size=18,
+                    height=30,
+                ),
+            )
+        ]
+    )
+
+    top10table.update_layout(width=1000, height=700)
+    st.plotly_chart(top10table, use_container_width=True)
+
     ###############################################################
     st.subheader("Model Conclusions")
     st.write(
