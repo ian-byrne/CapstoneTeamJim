@@ -80,9 +80,9 @@ def pytorch_writeup():
                 ),
                 cells=dict(
                     values=[
-                        res_v_base_yr["metric"],
-                        res_v_base_yr["model"],
-                        res_v_base_yr["baseline"],
+                        res_v_base_yr["Metric"],
+                        res_v_base_yr["Model"],
+                        res_v_base_yr["Baseline"],
                     ],
                     line_color="darkslategray",
                     fill=dict(color=["white", "white"]),
