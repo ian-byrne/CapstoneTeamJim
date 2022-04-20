@@ -114,3 +114,10 @@ def conclusion():
  
                  
               """) 
+    with st.expander("References"):
+        st.write(
+            """
+        1.  https://www.gale.com/c/business-demographicsnow
+
+        """ 
+        )
