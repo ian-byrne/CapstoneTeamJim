@@ -85,7 +85,7 @@ def model2():
               """)
               
     st.write("""
-             Now we are ready for modeling.  The VAR model accepts a few important (parameters<sup>1</sup>), specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
+             Now we are ready for modeling.  The VAR model accepts a few important parameters (reference 1), specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
              
              
               """) 
@@ -143,7 +143,7 @@ forecasts = var_res.forecast(df_2diff_log.values,steps=num_forecasts)
     
     
     st.write("""
-             We can examine residuals by plotting the residual errors against the predicted values as shown in the scatter plot below.              
+             We can examine residuals by plotting the residual errors against the predicted values (reference 2) as shown in the scatter plot below.              
              
               """) 
 
@@ -171,7 +171,7 @@ This tells us that the model is learning very well.
 
 
     st.write("""
-             But our values are still in log transform.  That won’t be very useful to the user so we need to transform it back into dollars.  This is not as simple as exponentiating the values as we need to account for the residual errors.  We can account for the residual error of the log transformed model by multiplying the exponentiated log prediction with the mean of the exponentiated prediction errors, as shown in the formula below:            
+             But our values are still in log transform.  That won’t be very useful to the user so we need to transform it back into dollars.  This is not as simple as exponentiating the values as we need to account for the residual errors.  We can account for the residual error of the log transformed model by multiplying the exponentiated log prediction with the mean of the exponentiated prediction errors, as shown in the formula (reference 3) below:            
            
                  
              
