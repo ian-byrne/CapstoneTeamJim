@@ -315,8 +315,8 @@ This tells us that the model is learning very well.
     with st.expander("References"):
         st.write(
             """
-        - https://www.statsmodels.org/stable/generated/statsmodels.tsa.vector_ar.var_model.VAR.html
-        - https://www.qualtrics.com/support/stats-iq/analyses/regression-guides/interpreting-residual-plots-improve-regression/
-        - https://stats.stackexchange.com/questions/55692/back-transformation-of-an-mlr-model
+        1.  https://www.statsmodels.org/stable/generated/statsmodels.tsa.vector_ar.var_model.VAR.html
+        2.  https://www.qualtrics.com/support/stats-iq/analyses/regression-guides/interpreting-residual-plots-improve-regression/
+        3.  https://stats.stackexchange.com/questions/55692/back-transformation-of-an-mlr-model
         """ 
         )
