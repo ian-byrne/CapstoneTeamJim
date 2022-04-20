@@ -51,7 +51,6 @@ def pytorch_writeup():
     st.plotly_chart(pred_errors, use_container_width=True)
 
     ###############################################################
-    # TODO: add results from yearly and monthly models here, make df
     res_v_base_yr = pd.DataFrame(
         {
             "Metric": ["MAE", "RMSE", "R^2"],
@@ -98,6 +97,36 @@ def pytorch_writeup():
     st.plotly_chart(yearly_scores, use_container_width=True)
 
     st.write("Below is a table of how the model scored using the monthly data")
+
+    monthly_scores = go.Figure(
+        data=[
+            go.Table(
+                header=dict(
+                    values=["Metric", "Model", "Baseline"],
+                    line_color="darkslategray",
+                    fill_color="#3366CC",
+                    align=["center", "center"],
+                    font=dict(color="white", size=20),
+                    height=40,
+                ),
+                cells=dict(
+                    values=[
+                        res_v_base_mo["Metric"],
+                        res_v_base_mo["Model"],
+                        res_v_base_mo["Baseline"],
+                    ],
+                    line_color="darkslategray",
+                    fill=dict(color=["white", "white"]),
+                    align=["center", "center"],
+                    font_size=18,
+                    height=30,
+                ),
+            )
+        ]
+    )
+
+    monthly_scores.update_layout(height=400)
+    st.plotly_chart(monthly_scores, use_container_width=True)
 
     ###############################################################
     pred_error = px.choropleth(
