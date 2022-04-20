@@ -69,7 +69,7 @@ def pytorch_writeup():
     residential” property type from the Redfin data for consistency, however, the
     model was trained using all property types.
 
-	A benefit of using the temporal fusion transformer is the ability to classify the
+    A benefit of using the temporal fusion transformer is the ability to classify the
     variables as static or time varying as well as known and unknown. The full data
     points used in the training data are laid out below along with how they were defined
     in the TimeSeriesDataSet class.
@@ -291,6 +291,7 @@ def pytorch_writeup():
     # TODO: display 2020 top 10 predictions
     # 2020preds = pd.read_csv()
     ###############################################################
+    st.subheader("Model Conclusions")
     st.write(
         """As we see above, the model can score well depending on the county, but
     the overall scores are lackluster compared to the previous two models used in this

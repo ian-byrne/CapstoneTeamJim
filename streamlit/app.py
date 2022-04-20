@@ -80,7 +80,7 @@ if choice == "Home":
     #### Project:
 
     We each selected a model type that interested us and proved to test well on our
-    preliminary data. This led to a time series Vector Autoregression (VAR) model, a supervised ExtraTreesRegressor model, and a neural network Transformer model being used in the project.  We looked at several targets for each region, and concluded that median sale price would be our final prediction target as it's more intuitive for the end user to understand.  As you will see, some models did better or worse depending on the target metric and the time granularity. 
+    preliminary data. This led to a time series Vector Autoregression (VAR) model, a supervised ExtraTreesRegressor model, and a neural network Transformer model being used in the project.  We looked at several targets for each region, and concluded that median sale price would be our final prediction target as it's more intuitive for the end user to understand.  As you will see, some models did better or worse depending on the target metric and the time granularity.
 
     """
     )
@@ -117,8 +117,6 @@ if choice == "Neural Network":
     deep neural network designed with an attention mechanism to allow it to refer
     back to long term dependencies."""
     )
-    period = st.radio("Please select yearly or monthly data", ("Yearly", "Monthly"))
-    # display text for post/analysis
     pytorch_writeup()
 
 if choice == "Conclusion":
