@@ -71,7 +71,7 @@ def pytorch_writeup():
         data=[
             go.Table(
                 header=dict(
-                    values=["metric", "model", "baseline"],
+                    values=["Metric", "Model", "Baseline"],
                     line_color="darkslategray",
                     fill_color="#3366CC",
                     align=["center", "center"],
