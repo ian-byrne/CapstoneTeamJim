@@ -70,7 +70,7 @@ def pytorch_writeup():
     pred_error = px.choropleth(
         preds,
         geojson=counties,
-        locations="FIPS",
+        locations="county_fips",
         color="diff",
         color_continuous_scale="Viridis",
         hover_name="region",
