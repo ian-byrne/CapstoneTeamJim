@@ -314,7 +314,6 @@ def pytorch_writeup():
     our data sets."""
     )
 
-    # TODO: display 2020 top 10 predictions
     preds2020 = pd.read_csv("streamlit/data/tft_top10_2020.csv")
     preds2020["2019to2020increase"] = preds2020["2019to2020increase"] * 100
     preds2020 = preds2020.round(2)
