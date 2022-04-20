@@ -123,6 +123,7 @@ def load_data(granularity="year"):
 
     elif granularity == "month":
         try:
+            # NOTE: this file will not be in the repo, compressed it is 100+mb
             print("Loading monthly data...")
             data = pd.read_csv(
                 "nn_monthly_data.csv.gz", parse_dates=["period_begin", "period_end"]
@@ -169,8 +170,9 @@ def load_data(granularity="year"):
 
     return data
 
-#TODO: Adjust functionality if I don't get to all the features.
-def train_model(granularity, data, pred_period):
+
+# TODO: Adjust functionality if I don't get to all the features.
+def train_model(granularity, data):
     """
     Train the pytorch-forecasting TemporalFusionTransformer.
 
@@ -180,9 +182,6 @@ def train_model(granularity, data, pred_period):
         Granularity for the mondel data. Can be year or month.
     data: pandas DataFrame
         DataFrame that will house the training and validation data.
-    pred_period: int
-        Number of years or months you would like to predict into the future.
-        Options are 1 or 12, 2 or 24, and 3 or 36.
     Returns
     -------
 
@@ -292,13 +291,98 @@ def train_model(granularity, data, pred_period):
                 "county_fips": NaNLabelEncoder(add_nan=True),
             },
         )
+    # create validation dataset using the same normalization techniques as for the training dataset
+    validation = TimeSeriesDataSet.from_dataset(
+        training,
+        data,
+        predict=True,
+        min_prediction_idx=training.index.time.max() + 1,
+        stop_randomization=True,
+    )
 
-    return None
+    # convert datasets to dataloaders for training
+    batch_size = 128
+    train_dataloader = training.to_dataloader(
+        train=True, batch_size=batch_size, num_workers=2
+    )
+    val_dataloader = validation.to_dataloader(
+        train=False,
+        batch_size=batch_size * 10,
+        num_workers=2,  # double check factor of 10 will work
+    )
+
+    # configure network and trainer
+    # create PyTorch Lightning Trainer with early stopping
+    early_stop_callback = EarlyStopping(
+        monitor="val_loss", min_delta=1e-4, patience=4, verbose=False, mode="min"
+    )
+    lr_logger = LearningRateMonitor()  # log the learning rate
+    logger = TensorBoardLogger("lightning_logs")  # logging results to a tensorboard
+
+    trainer = pl.Trainer(
+        max_epochs=30,
+        gpus=0,  # run on CPU, if on multiple GPUs, use accelerator="ddp"
+        gradient_clip_val=0.15,
+        limit_train_batches=30,  # 30 batches per epoch
+        # fast_dev_run=True,  # comment in to check that networkor dataset has no serious bugs
+        callbacks=[lr_logger, early_stop_callback],
+        logger=logger,
+    )
+
+    if granularity == "monthly":
+        tft = TemporalFusionTransformer.from_dataset(
+            # dataset
+            training,
+            # architecture hyperparameters
+            hidden_size=58,
+            attention_head_size=4,  # play around with this param - can go up to 4 depending on sizeof data
+            dropout=0.1,
+            hidden_continuous_size=56,
+            # loss metric to optimize
+            loss=QuantileLoss(),
+            # logging frequency
+            log_interval=0,
+            # optimizer parameters
+            learning_rate=0.007,  # change back to best_tft
+            # reduce learning rate if no improvement in validation loss after x epochs
+            reduce_on_plateau_patience=4,
+        )
+    else:
+        tft = TemporalFusionTransformer.from_dataset(
+            # dataset
+            training,
+            # architecture hyperparameters
+            hidden_size=82,
+            lstm_layers=1,  # Check to see if this helps, default is 1 - 2 didnt seem to to help
+            attention_head_size=1,  # play around with this param - can go up to 4 depending on sizeof data
+            dropout=0.15,
+            hidden_continuous_size=22,
+            # loss metric to optimize
+            loss=QuantileLoss(),
+            # logging frequency
+            log_interval=0,
+            # optimizer parameters
+            learning_rate=0.1,  # change back to best_tft
+            # reduce learning rate if no improvement in validation loss after x epochs
+            reduce_on_plateau_patience=4,
+        )
+
+    # fit the model on the data - redefine the model with the correct learning rate if necessary
+    trainer.fit(
+        tft, train_dataloaders=train_dataloader, val_dataloaders=val_dataloader,
+    )
+
+    best_model_path = trainer.checkpoint_callback.best_model_path
+    best_tft = TemporalFusionTransformer.load_from_checkpoint(best_model_path)
+
+    return best_tft
 
 
 def main(granularity, pred_period):
     """Run the model with desired parameters."""
-    pass
+    data = load_data(granularity)
+    train_model(granularity, data)
+    print("TFT Model trained for 1 year predictions.")
 
 
 if __name__ == "__main__":
@@ -308,21 +392,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--granularity",
         nargs="?",
-        default="month",
+        default="year",
         help="Time granularity for the model. Choose year or month, defaults to year.",
-    )
-    parser.add_argument(
-        "--pred_period",
-        nargs="?",
-        default="12",
-        help="How far out you want the model to predict. Default is 12 months.",
     )
 
     args = parser.parse_args()
 
     granularity = args.granularity
-    pred_period = args.pred_period
 
     print("Running model now...")
-    main(granularity, pred_period)
+    main(granularity)
     print("Training completed.")
