@@ -18,7 +18,7 @@ def conclusion():
     
     st.header("2022 Real Estate Price change from 2021  :house_with_garden: 	")
     
-    st.write("We can fit all the data from 2016 to 2021 and predict the median sale price by county for 2022 and calculate the 95% confidence intervals.")
+    st.write("We can fit the VAR model with all the data from 2016 to 2021 to predict the median sale price by county for 2022 and calculate the 95% confidence intervals.")
     
     summary2022prediction = pd.read_csv("streamlit/data/Summary_2022_Predictions.csv")    
     
@@ -48,7 +48,7 @@ def conclusion():
               """)               
     
     st.header("2022 Top 10 Counties for Real Estate Investment Opportunities  :heavy_dollar_sign:")
-    st.write("The forecasted top 10 counties to return the best real estate investment opportunities are shown below")
+    st.write("The forecasted top 10 counties to return the best real estate investment opportunities are shown below.")
     
     
     
@@ -73,7 +73,7 @@ def conclusion():
              
               """)     
  
-    st.write("Top 10 counties as having the highest percentage of growth in 2022 compared to 2021:")
+    st.write("Top 10 counties with the highest percentage of growth in 2022 compared to 2021:")
 
 
     top10table = go.Figure(data=[go.Table(
@@ -97,11 +97,12 @@ def conclusion():
     
     st.subheader("Future Work")
     
-    st.write("""This chart provides the following information:  
+    st.write("""Future work on this analysis could include the following ideas:  
              
-*  It would be interesting to see how this model performs on the remaining US counties, as well as performing a similar analysis on Canadian/International markets.  
-*  Can the models be combined or improved to bring more local features
-*  With all the recent commentary on inflation, we could in a future iteration use that data as well.
+*  It would be interesting to see how this model performs on the remaining U.S. counties, as well as performing a similar analysis on Canadian/International markets.  
+*  Increase the granularity of the results to be able to identify sub-regions within the counties that are predicting to have higher returns.  This would require the input data to be higher granularity as well.
+*  Combine or augment the models to bring more local features, like Yelp rating trends and U-haul rental trends.  
+*  Investigate the impact of inflation.
  
                  
               """) 
