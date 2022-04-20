@@ -21,7 +21,7 @@ def model2():
         
         
     st.write("""
-             Vector Autoregression (VAR) is a multivariate time series model that extracts the relationship between datasets over time.  In this project, we explore the relationship between median sales prices between US counties over time.  How does the median sales price for county X influence its neighboring county Y?  Being able to establish the relationship between the counties, we are able to use this information to support the prediction of future median sales prices vs. a univariate time series model that would predict the sale price by county on its own.
+             Vector Autoregression (VAR) is a multivariate time series model that extracts the relationship between datasets over time.  In this project, we explore the relationship between median sales prices between U.S. counties over time.  How does the median sales price for county X influence its neighboring county Y?  Being able to establish the relationship between the counties, we are able to use this information to support the prediction of future median sales prices vs. a univariate time series model that would predict the sale price by county on its own.
             
             
             """)
@@ -39,7 +39,7 @@ def model2():
               """)     
 
     st.write("""
-             In order to compare the results between models we need to ensure that we are using the same counties.  Since ACS demographic data contains data at the county level for county populations > 65,000 we need to find the subset of counties that are available between both datasets.  This reduces the final dataset to 613 counties.
+             In order to compare the results between models we need to ensure that we are using the same counties.  Since ACS demographic data contains data at the county level for county populations > 65,000 we need to find the subset of counties that are available between both datasets.  This reduces the final dataset to 613 U.S. counties.
    
              
               """) 
@@ -79,13 +79,13 @@ def model2():
 
 
     st.write("""
-             Next, for a time series analysis we need to test if the time series is stationary or not.  The Augmented Dicky Fuller test (ADF test) is a hypothesis test to determine if a time series is stationary.  If the p-value is less than 0.05, the time series is stationary.  If the p-value is greater than 0.05, the time series is not stationary.  But we can make the time series stationary by differencing and re-running the ADF test.  In the case of the redfin data, we need to difference the series twice before all the series are stationary             
+             Next, for a time series analysis we need to test if the time series is stationary or not.  The Augmented Dicky Fuller test (ADF test) is a hypothesis test to determine if a time series is stationary.  If the p-value is less than 0.05, the time series is stationary.  If the p-value is greater than 0.05, the time series is not stationary.  But we can make the time series stationary by differencing and re-running the ADF test.  In the case of the redfin data, we need to difference the series twice before all the series are stationary.             
              
              
               """)
               
     st.write("""
-             Now we are ready for modeling.  The VAR model accepts a few important parameters, specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
+             Now we are ready for modeling.  The VAR model accepts a few important parameters<sup>1<\sup>, specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
              
              
               """) 
@@ -124,7 +124,7 @@ forecasts = var_res.forecast(df_2diff_log.values,steps=num_forecasts)
     st.subheader("VAR Prediction Error  :dart: 	")    
     
     st.write("""
-             We can plot the residual errors on a histogram to visualize the distribution.  As you can see in the chart below, the residual errors have a zero mean and are normally distributed and will support our calculation for prediction intervals. ")
+             We can plot the residual errors on a histogram to visualize the distribution.  As you can see in the chart below, the residual errors have a zero mean and are normally distributed and will support our calculation for prediction intervals. 
              
              
               """) 
