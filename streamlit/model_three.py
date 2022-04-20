@@ -18,18 +18,48 @@ def pytorch_writeup():
     ) as response:
         counties = json.load(response)
 
+    # load data frames
     preds = pd.read_csv("streamlit/data/pytorch_monthly2021_preds.csv")
     preds = preds[preds["property_type"] == "All Residential"]
     preds["diff"] = preds["diff"] / preds["target"]
 
-    st.header("Temporal Fusion Transformer ")
-    # TODO: Intro write up
-    st.write("Intro Text")
+    st.header("Temporal Fusion Transformer")
+    st.write(
+        """
+    Another option we looked at was using a neural network. Transformers such as BERT
+    and GPT have been the cutting edge options for NLP recently. There has been
+    considerable research into applying this same idea to time series since much like
+    text, time series follow a specific sequence. While researching potential options,
+    we came across the Temporal Fusion Transformer model, which is specifically designed
+     for multi horizon predictions. This seemed to be a great model candidate due to the
+     recent results that it has produced against other cutting edge time series
+     prediction models. With the datasets used by the authors, they improved results by
+     between 3% and 26% over the next best alternative.[cite]"""
+    )
 
-    # TODO: Overview of tft
-    st.write("Overview of the TFT transformer")
+    st.write(
+        """
+    The benefit of using a transformer style architecture with sequential data is its
+    ability to reference much earlier period or words in a sequence without the overhead
+    that a typical RNN or LSTM network would have. While both of those models can look
+    back at older values, as the data sequence becomes longer those references can get
+    “watered down” and add significant computing cost. The transformer avoids this by
+    using what is called attention, an architecture introduced in 2017 with the seminal
+    paper “Attention is all you need” from Google Research[cite]. Attention can be
+    boiled down to “what part of the input sequence should the model focus on.” Using a
+    query, key, value system, the model is able to look back at specific variables and
+    their positional encoding. This is not unlike a query, key, and value in the sense
+    of a database, where one would have a question, the question would then match a key,
+    and that value would be what the model paid attention to for that iteration."""
+    )
+    ##############################################################
+    # TODO: Data sections
+
     ##############################################################
 
+    ##############################################################
+
+    ##############################################################
     st.write("Below is the histogram of residual error")
 
     hist = px.histogram(preds["diff"], title="Histogram of residual error of model")
