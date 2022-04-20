@@ -21,7 +21,7 @@ def model2():
         
         
     st.write("""
-             Vector Autoregression (VAR) is a multivariate time series model that extracts the relationship between datasets over time.  In this project, we explore the relationship between median sales prices between US counties over time.  How does the median sales price for county X influence its neighboring county Y?  Being able to establish the relationship between the counties, we are able to use this information to support the prediction of future median sales prices vs. a univariate time series model that would predict the sale price by county on its own.
+             Vector Autoregression (VAR) is a multivariate time series model that extracts the relationship between datasets over time.  In this project, we explore the relationship between median sales prices between U.S. counties over time.  How does the median sales price for county X influence its neighboring county Y?  Being able to establish the relationship between the counties, we are able to use this information to support the prediction of future median sales prices vs. a univariate time series model that would predict the sale price by county on its own.
             
             
             """)
@@ -39,7 +39,7 @@ def model2():
               """)     
 
     st.write("""
-             In order to compare the results between models we need to ensure that we are using the same counties.  Since ACS demographic data contains data at the county level for county populations > 65,000 we need to find the subset of counties that are available between both datasets.  This reduces the final dataset to 613 counties.
+             In order to compare the results between models we need to ensure that we are using the same counties.  Since ACS demographic data contains data at the county level for county populations > 65,000 we need to find the subset of counties that are available between both datasets.  This reduces the final dataset to 613 U.S. counties.
    
              
               """) 
@@ -79,13 +79,13 @@ def model2():
 
 
     st.write("""
-             Next, for a time series analysis we need to test if the time series is stationary or not.  The Augmented Dicky Fuller test (ADF test) is a hypothesis test to determine if a time series is stationary.  If the p-value is less than 0.05, the time series is stationary.  If the p-value is greater than 0.05, the time series is not stationary.  But we can make the time series stationary by differencing and re-running the ADF test.  In the case of the redfin data, we need to difference the series twice before all the series are stationary             
+             Next, for a time series analysis we need to test if the time series is stationary or not.  The Augmented Dicky Fuller test (ADF test) is a hypothesis test to determine if a time series is stationary.  If the p-value is less than 0.05, the time series is stationary.  If the p-value is greater than 0.05, the time series is not stationary.  But we can make the time series stationary by differencing and re-running the ADF test.  In the case of the redfin data, we need to difference the series twice before all the series are stationary.             
              
              
               """)
               
     st.write("""
-             Now we are ready for modeling.  The VAR model accepts a few important parameters, specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
+             Now we are ready for modeling.  The VAR model accepts a few important parameters (reference 1), specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
              
              
               """) 
@@ -124,7 +124,7 @@ forecasts = var_res.forecast(df_2diff_log.values,steps=num_forecasts)
     st.subheader("VAR Prediction Error  :dart: 	")    
     
     st.write("""
-             We can plot the residual errors on a histogram to visualize the distribution.  As you can see in the chart below, the residual errors have a zero mean and are normally distributed and will support our calculation for prediction intervals. ")
+             We can plot the residual errors on a histogram to visualize the distribution.  As you can see in the chart below, the residual errors have a zero mean and are normally distributed and will support our calculation for prediction intervals. 
              
              
               """) 
@@ -143,7 +143,7 @@ forecasts = var_res.forecast(df_2diff_log.values,steps=num_forecasts)
     
     
     st.write("""
-             We can examine residuals by plotting the residual errors against the predicted values as shown in the scatter plot below.              
+             We can examine residuals by plotting the residual errors against the predicted values (reference 2) as shown in the scatter plot below.              
              
               """) 
 
@@ -171,7 +171,7 @@ This tells us that the model is learning very well.
 
 
     st.write("""
-             But our values are still in log transform.  That won’t be very useful to the user so we need to transform it back into dollars.  This is not as simple as exponentiating the values as we need to account for the residual errors.  We can account for the residual error of the log transformed model by multiplying the exponentiated log prediction with the mean of the exponentiated prediction errors, as shown in the formula below:            
+             But our values are still in log transform.  That won’t be very useful to the user so we need to transform it back into dollars.  This is not as simple as exponentiating the values as we need to account for the residual errors.  We can account for the residual error of the log transformed model by multiplying the exponentiated log prediction with the mean of the exponentiated prediction errors, as shown in the formula (reference 3) below:            
            
                  
              
@@ -237,7 +237,7 @@ This tells us that the model is learning very well.
                             hover_data =['Predicted Median Sale Price 2020'],
                             scope="usa",
                             labels={'Forecast error %':'2020 % Forecast error'},
-                            title = 'Average forecast error by ACS county for 2020 prediction, with most counties having less error than 2%'
+                            title = 'Average forecast error by ACS county for 2020 prediction'
                           )
     Pred2020_error.update_layout(height = 500)
     st.plotly_chart(Pred2020_error,use_container_width=True)
@@ -310,4 +310,13 @@ This tells us that the model is learning very well.
                   )])
     
     top10table.update_layout(width=1000, height=700)
-    st.plotly_chart(top10table,use_container_width=True)    
+    st.plotly_chart(top10table,use_container_width=True) 
+    
+    with st.expander("References"):
+        st.write(
+            """
+        1.  https://www.statsmodels.org/stable/generated/statsmodels.tsa.vector_ar.var_model.VAR.html
+        2.  https://www.qualtrics.com/support/stats-iq/analyses/regression-guides/interpreting-residual-plots-improve-regression/
+        3.  https://stats.stackexchange.com/questions/55692/back-transformation-of-an-mlr-model
+        """ 
+        )
