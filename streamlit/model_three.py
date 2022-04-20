@@ -53,12 +53,121 @@ def pytorch_writeup():
     and that value would be what the model paid attention to for that iteration."""
     )
     ##############################################################
-    # TODO: Data sections
+    st.subheader("Data selection")
+    st.write(
+        """
+    For the monthly granularity model (the better scoring of the two), the main
+    datasets chosen were the Redfin sales data, U.S. monthly unemployment data by
+    state, and U.S. state corporate and personal income tax rates. The year over
+    year and month over month calculations have been dropped from the monthly model
+    Redfin data as the neural network should be able to identify these relationships
+    without being explicitly told. All of these data points combined allowed for the
+    data to begin in 2012 and run through the end of 2021. In order to avoid
+    potential data leakage, median sale price per square foot was removed as it very
+    highly correlated to the target variable of median sale price. Both the yearly
+    and the monthly data that are presented here incorporate only the “all
+    residential” property type from the Redfin data for consistency, however, the
+    model was trained using all property types.
 
+	A benefit of using the temporal fusion transformer is the ability to classify the
+    variables as static or time varying as well as known and unknown. The full data
+    points used in the training data are laid out below along with how they were defined
+    in the TimeSeriesDataSet class.
+
+    Below is an example of how the data was defined for the monthly granularity."""
+    )
+
+    code = """
+    training = TimeSeriesDataSet(
+    data[lambda x: x.time_idx <= training_cutoff],
+    time_idx="time_idx",  # column name of time of observation
+    target="median_sale_price",  # column name of target to predict
+    group_ids=[
+        "county_fips",
+        "region",
+        "state",
+        "property_type",
+    ],  # column name(s) for timeseries IDs
+    max_encoder_length=max_encoder_length,  # how much history to use
+    max_prediction_length=max_prediction_length,  # how far to predict into future
+    # covariates static for a timeseries ID
+    static_categoricals=["region", "property_type", "state", "county_fips"],
+    static_reals=[],
+    # covariates known and unknown in the future to inform prediction
+    time_varying_known_categoricals=["month"],
+    time_varying_known_reals=[
+        "year",
+        "time_idx",
+        "income_tax_low",
+        "income_tax_high",
+        "corp_income_tax_low",
+        "corp_income_tax_high",
+    ],
+    time_varying_unknown_categoricals=[],
+    time_varying_unknown_reals=[
+        "median_sale_price",
+        "median_list_price",
+        "median_list_ppsf",
+        "homes_sold",
+        "pending_sales",
+        "new_listings",
+        "inventory",
+        "months_of_supply",
+        "median_dom",
+        "sold_above_list",
+        "off_market_in_two_weeks",
+    ],
+    add_relative_time_idx=True,
+    allow_missing_timesteps=True,
+    categorical_encoders={
+        "region": NaNLabelEncoder(add_nan=True),
+        "county_fips": NaNLabelEncoder(add_nan=True),
+    },
+    )
+    """
+    st.code(code, language="python")
+
+    st.write(
+        """Data points that do not change, such as property type or region are
+        classified as static categoricals. Year and time_idx are both categorized as
+        time varying real numbers along with the tax data. Classifying tax rates as a
+        ime varying known number makes sense due to the fact that when they do change,
+        they are generally voted on and known beforehand."""
+    )
     ##############################################################
-
-    ##############################################################
-
+    st.subheader("Hyperparameters")
+    st.write(
+        """
+        Pytorch-forecasting has an integration with a package called Optuna that can
+        run studies to find the optimal hyperparameters for a specified model. This can
+        be thought of as similar to grid search from sklearn. When running this for the
+        monthly data, this took just under three hours on my laptop. The study for the
+        yearly data took under one hour. The following parameters were searched:
+        gradient clip, hidden size, dropout, hidden continuous size, attention head
+        size, and learning rate. """
+    )
+    st.write(
+        """
+        - For the yearly model the following parameters were suggested: `{
+            'gradient_clip_val': 0.012136185295350904,
+            'hidden_size': 82,
+            'dropout': 0.14907256141821396,
+            'hidden_continuous_size': 22,
+            'attention_head_size': 1,
+            'learning_rate': 0.10036312732505494}`.
+        - For the monthly model the following parameters were suggested: `{
+            'gradient_clip_val': 0.16539859210424376,
+            'hidden_size': 58,
+            'dropout': 0.10508905793984676,
+            'hidden_continuous_size': 56,
+            'attention_head_size': 4,
+            'learning_rate': 0.007798356725190109}`.
+        """
+    )
+    st.write(
+        """For the 2020 predictions presented at the end of this page, monthly data
+    was used using the same hyper parameters used in the 2021 model training."""
+    )
     ##############################################################
     st.write("Below is the histogram of residual error")
 
@@ -81,6 +190,8 @@ def pytorch_writeup():
     st.plotly_chart(pred_errors, use_container_width=True)
 
     ###############################################################
+    st.subheader("Results with using 2021 as test data.")
+
     res_v_base_yr = pd.DataFrame(
         {
             "Metric": ["MAE", "RMSE", "R^2"],
@@ -95,7 +206,9 @@ def pytorch_writeup():
             "Baseline": [54858.941, 159162.2, 0.599],
         }
     )
+
     st.write("Below is a table of how the model scored using the yearly data")
+
     yearly_scores = go.Figure(
         data=[
             go.Table(
@@ -175,11 +288,21 @@ def pytorch_writeup():
     st.plotly_chart(pred_error, use_container_width=True)
 
     ###############################################################
-    # TODO: 2022 predictions if time permits
-    # PITA to get predictions from this model -  docs not clear at all
+    # TODO: display 2020 top 10 predictions
+    # 2020preds = pd.read_csv()
     ###############################################################
-    # TODO: Conclusion of the model
-    st.write("Conclusion...")
+    st.write(
+        """As we see above, the model can score well depending on the county, but
+    the overall scores are lackluster compared to the previous two models used in this
+    project. I think due to the nature of the transformers and neural networks in
+    general, the model would perform better if it had more data to train on. By that I
+    mean both more years to train on, including some recessions, as well as data such
+    as when lockdowns occurred in each state. Large shifts in housing prices were
+    observed once covid lockdowns began which makes sense since people were stuck
+    inside all the time and put more thought into their home and immediate surroundings.
+    Then there is also the fact that sometimes a complicated neural network is not the
+    right choice for your problem."""
+    )
 
     ###############################################################
     # TODO: References
