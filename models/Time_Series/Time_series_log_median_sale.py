@@ -326,24 +326,7 @@ def time_series():
 if __name__ == "__main__":
     time_series()
 
-#%% Granger Causality checks
-# from tqdm import tqdm
-# df_gran_test = df.pivot(index='date',columns='county_fips',values='median_sale_price')
-# counties = list(df_gran_test.columns)
-# test = 'ssr_chi2test'
-# granger_df = pd.DataFrame(data=None, columns = counties, index = counties)
 
-# for i in tqdm(counties):
-#     for j in counties:
-#         if i!=j:
-#             test_result = grangercausalitytests(df_gran_test[[i, j]], maxlag=p, verbose=False)
-#             p_values = [round(test_result[i+1][0][test][1],4) for i in range(p)]
-#             min_p_value = np.min(p_values)
-#             granger_df.loc[i,j] = min_p_value
-            
-# granger_df.astype(float)
-
-#Takes about 4.5 hours to run.  It can be seen that there are several series that have causality to other time series.
 
 
 
