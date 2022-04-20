@@ -67,6 +67,35 @@ def pytorch_writeup():
         }
     )
 
+    yearly_scores = go.Figure(
+        data=[
+            go.Table(
+                header=dict(
+                    values=["metric", "model", "baseline"],
+                    line_color="darkslategray",
+                    fill_color="#3366CC",
+                    align=["center", "center"],
+                    font=dict(color="white", size=20),
+                    height=40,
+                ),
+                cells=dict(
+                    values=[
+                        res_v_base_yr["metric"],
+                        res_v_base_yr["model"],
+                        res_v_base_yr["baseline"],
+                    ],
+                    line_color="darkslategray",
+                    fill=dict(color=["white", "white"]),
+                    align=["center", "center"],
+                    font_size=18,
+                    height=30,
+                ),
+            )
+        ]
+    )
+
+    yearly_scores.update_layout(height=300)
+    st.plotly_chart(yearly_scores, use_container_width=True)
     ###############################################################
     pred_error = px.choropleth(
         preds,
