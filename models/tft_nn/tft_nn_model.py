@@ -392,21 +392,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "--granularity",
         nargs="?",
-        default="month",
+        default="year",
         help="Time granularity for the model. Choose year or month, defaults to year.",
-    )
-    parser.add_argument(
-        "--pred_period",
-        nargs="?",
-        default="12",
-        help="How far out you want the model to predict. Default is 12 months.",
     )
 
     args = parser.parse_args()
 
     granularity = args.granularity
-    pred_period = args.pred_period
 
     print("Running model now...")
-    main(granularity, pred_period)
+    main(granularity)
     print("Training completed.")
