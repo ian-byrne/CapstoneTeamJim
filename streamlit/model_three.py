@@ -67,20 +67,20 @@ def pytorch_writeup():
     ###############################################################
     # TODO: 2021 test results chloropleth
 
-    # pred_error = px.choropleth(
-    #     preds,
-    #     geojson=counties,
-    #     locations="FIPS",
-    #     color="diff",
-    #     color_continuous_scale="Viridis",
-    #     hover_name="Region",
-    #     hover_data=["Predicted Median Sale Price 2020"],
-    #     scope="usa",
-    #     labels={"Forecast error %": "2020 % Forecast error"},
-    #     title="Average forecast error by ACS county for 2020 prediction, with most counties having less error than 2%",
-    # )
-    # pred_error.update_layout(height=500)
-    # st.plotly_chart(pred_error, use_container_width=True)
+    pred_error = px.choropleth(
+        preds,
+        geojson=counties,
+        locations="FIPS",
+        color="diff",
+        color_continuous_scale="Viridis",
+        hover_name="region",
+        hover_data=["preds"],
+        scope="usa",
+        labels={"diff": "2021 Difference between Prediction & Target"},
+        title="Average forecast error by ACS county for 2021 prediction",
+    )
+    pred_error.update_layout(height=500)
+    st.plotly_chart(pred_error, use_container_width=True)
 
     ###############################################################
     # TODO: 2022 predictions if time permits
