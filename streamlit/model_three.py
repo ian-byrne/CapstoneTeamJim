@@ -166,17 +166,22 @@ def pytorch_writeup():
     )
     st.write(
         """For the 2020 predictions presented at the end of this page, monthly data
-    was used using the same hyper parameters used in the 2021 model training."""
+    was used with the same hyper parameters used in the 2021 model training. """
     )
     ##############################################################
-    st.write("Below is the histogram of residual error")
+    st.subheader("Errors")
+    st.write(
+        """Below is the histogram of residual error,  as we can see, the
+    majority of the errors are between 0 and 10% below the actual target price. The model
+    seems to have learned to give predictions that are slightly low."""
+    )
 
-    hist = px.histogram(preds["diff"], title="Histogram of residual error of model")
+    hist = px.histogram(preds["diff"], title="Residual Error of Model")
 
     st.plotly_chart(hist, use_container_width=True)
 
     ###############################################################
-    st.write("Below are the prediction errors for all counties")
+    st.write("""Below are the prediction errors for all counties.""")
 
     pred_errors = px.scatter(
         preds,
