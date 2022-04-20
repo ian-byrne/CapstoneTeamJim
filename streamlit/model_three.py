@@ -66,7 +66,7 @@ def pytorch_writeup():
             "Baseline": [54858.941, 159162.2, 0.599],
         }
     )
-
+    st.write("Below is a table of how the model scored using the yearly data")
     yearly_scores = go.Figure(
         data=[
             go.Table(
@@ -94,8 +94,11 @@ def pytorch_writeup():
         ]
     )
 
-    yearly_scores.update_layout(height=300)
+    yearly_scores.update_layout(height=400)
     st.plotly_chart(yearly_scores, use_container_width=True)
+
+    st.write("Below is a table of how the model scored using the monthly data")
+
     ###############################################################
     pred_error = px.choropleth(
         preds,
