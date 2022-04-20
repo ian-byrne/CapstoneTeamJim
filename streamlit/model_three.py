@@ -310,7 +310,8 @@ def pytorch_writeup():
     st.write(
         """As we can see below, the increases at the top end of the model are highly
     unrealistic even in a strong market. It should be noted that most of these projections
-    were made in areas that normally have property values under 100k."""
+    were made in areas that normally have property values under 100k from what we see in
+    our data sets."""
     )
 
     # TODO: display 2020 top 10 predictions
