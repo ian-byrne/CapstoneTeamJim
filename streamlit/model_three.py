@@ -34,7 +34,7 @@ def pytorch_writeup():
      for multi horizon predictions. This seemed to be a great model candidate due to the
      recent results that it has produced against other cutting edge time series
      prediction models. With the datasets used by the authors, they improved results by
-     between 3% and 26% over the next best alternative ([Lim, et al., 2019](https://arxiv.org/pdf/1912.09363.pdf))"""
+     between 3% and 26% over the next best alternative ([Lim et al., 2019](https://arxiv.org/pdf/1912.09363.pdf))"""
     )
 
     st.write(
@@ -319,3 +319,11 @@ def pytorch_writeup():
     simpler models can be better."""
     )
 
+    with st.expander("References"):
+        st.write(
+            """
+        1.  [Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting](https://arxiv.org/pdf/1912.09363.pdf)
+        2.  [Attention Is All You Need](https://arxiv.org/pdf/1706.03762.pdf)
+        3.  [Pytorch-Forecasting](https://pytorch-forecasting.readthedocs.io/en/stable/)
+        """
+        )
