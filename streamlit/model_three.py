@@ -34,7 +34,7 @@ def pytorch_writeup():
      for multi horizon predictions. This seemed to be a great model candidate due to the
      recent results that it has produced against other cutting edge time series
      prediction models. With the datasets used by the authors, they improved results by
-     between 3% and 26% over the next best alternative.[cite]"""
+     between 3% and 26% over the next best alternative ([Lim, et al., 2019](https://arxiv.org/pdf/1912.09363.pdf))"""
     )
 
     st.write(
@@ -45,7 +45,7 @@ def pytorch_writeup():
     back at older values, as the data sequence becomes longer those references can get
     “watered down” and add significant computing cost. The transformer avoids this by
     using what is called attention, an architecture introduced in 2017 with the seminal
-    paper “Attention is all you need” from Google Research[cite]. Attention can be
+    paper “Attention is all you need” from Google Research ([Vaswani et al., 2017](https://arxiv.org/pdf/1706.03762.pdf)). Attention can be
     boiled down to “what part of the input sequence should the model focus on.” Using a
     query, key, value system, the model is able to look back at specific variables and
     their positional encoding. This is not unlike a query, key, and value in the sense
@@ -68,13 +68,13 @@ def pytorch_writeup():
     potential data leakage, median sale price per square foot was removed as it very
     highly correlated to the target variable of median sale price. Both the yearly
     and the monthly data that are presented here incorporate only the “all
-    residential” property type from the Redfin data for consistency, however, the
+    residential” property type from the Redfin data for consistency with the other two, however, the
     model was trained using all property types.
 
     A benefit of using the temporal fusion transformer is the ability to classify the
     variables as static or time varying as well as known and unknown. The full data
     points used in the training data are laid out below along with how they were defined
-    in the TimeSeriesDataSet class.
+    in the [`TimeSeriesDataSet`](https://pytorch-forecasting.readthedocs.io/en/stable/api/pytorch_forecasting.data.timeseries.TimeSeriesDataSet.html) class.
 
     Below is an example of how the data was defined for the monthly granularity."""
     )
@@ -140,7 +140,7 @@ def pytorch_writeup():
     st.subheader("Hyperparameters")
     st.write(
         """
-        Pytorch-forecasting has an integration with a package called Optuna that can
+        Pytorch-forecasting has an integration with a package called [Optuna](https://optuna.org/) that can
         run studies to find the optimal hyperparameters for a specified model. This can
         be thought of as similar to grid search from sklearn. When running this for the
         monthly data, this took just under three hours on my laptop. The study for the
@@ -167,15 +167,17 @@ def pytorch_writeup():
         """
     )
     st.write(
-        """For the 2020 predictions presented at the end of this page, monthly data
-    was used with the same hyper parameters used in the 2021 model training. """
+        """The exact values listed above were not what was used as there was some manual
+        tuning done afterwards. It is essential to have manual control over parameters in any neural network.
+        For the 2020 predictions presented at the end of this page, monthly data granularity
+        was used with the same hyper parameters used in the 2021 model training. """
     )
     ##############################################################
     st.subheader("Errors")
     st.write(
         """Below is the histogram of residual error,  as we can see, the
     majority of the errors are between 0 and 10% below the actual target price. The model
-    seems to have learned to give predictions that are slightly low."""
+    has developed a bias to predict on the low side of the target."""
     )
 
     hist = px.histogram(preds["diff"], title="Residual Error of Model")
@@ -214,7 +216,11 @@ def pytorch_writeup():
         }
     )
 
-    st.write("Below is a table of how the model scored using the yearly data")
+    st.write(
+        """The [Baseline](https://pytorch-forecasting.readthedocs.io/en/latest/api/pytorch_forecasting.models.baseline.Baseline.html) model that we compare against in these tables simply
+    takes the last observed value of the target and repeats it for however many periods
+    it is to forecast out to. Below is a table of how the model scored using the yearly data"""
+    )
 
     yearly_scores = go.Figure(
         data=[
@@ -302,22 +308,14 @@ def pytorch_writeup():
     st.write(
         """As we see above, the model can score well depending on the county, but
     the overall scores are lackluster compared to the previous two models used in this
-    project. I think due to the nature of the transformers and neural networks in
-    general, the model would perform better if it had more data to train on. By that I
-    mean both more years to train on, including some recessions, as well as data such
-    as when lockdowns occurred in each state. Large shifts in housing prices were
-    observed once covid lockdowns began which makes sense since people were stuck
-    inside all the time and put more thought into their home and immediate surroundings.
-    Then there is also the fact that sometimes a complicated neural network is not the
-    right choice for your problem."""
+    project. Due to the architecture of transformers and neural networks in
+    general, the model would likely perform better if it had more data to train on. By that I
+    mean both more years and months to train on, including some recessions and more varied
+    pricing periods, as well as more social data such as when lockdowns occurred in each state.
+    Large shifts in housing prices were observed once covid lockdowns began which makes
+    sense since people were stuck inside all the time and put more thought into their
+    home and immediate surroundings. These results can also act as a reminder that sometimes a
+    complicated neural network is not the right choice to solve the problem at hand and that
+    simpler models can be better."""
     )
 
-    ###############################################################
-    # TODO: References
-
-    with st.expander("References"):
-        st.write(
-            """
-        - References go here.
-        """
-        )
