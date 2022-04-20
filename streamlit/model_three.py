@@ -17,8 +17,10 @@ def pytorch_writeup():
         "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json"
     ) as response:
         counties = json.load(response)
+
     # TODO: filter the dataframe to "all residential"
     preds = pd.read_csv("streamlit/data/pytorch_monthly2021_preds.csv")
+    preds = preds[preds["property_type"] == "All Residential"]
 
     st.header("Temporal Fusion Transformer ")
     # TODO: Intro write up
@@ -65,8 +67,6 @@ def pytorch_writeup():
     )
 
     ###############################################################
-    # TODO: 2021 test results chloropleth
-
     pred_error = px.choropleth(
         preds,
         geojson=counties,
