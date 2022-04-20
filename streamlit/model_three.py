@@ -20,6 +20,7 @@ def pytorch_writeup():
 
     preds = pd.read_csv("streamlit/data/pytorch_monthly2021_preds.csv")
     preds = preds[preds["property_type"] == "All Residential"]
+    preds["diff"] = preds["diff"] / preds["target"]
 
     st.header("Temporal Fusion Transformer ")
     # TODO: Intro write up
