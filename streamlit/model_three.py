@@ -17,11 +17,17 @@ def pytorch_writeup():
         "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json"
     ) as response:
         counties = json.load(response)
+    f = open("streamlit/data/VAR_counties.txt", "r")
+    content = f.read()
+    var_counties = content.split("\n")
+    f.close()
 
-    # load data frames
+    var = [int(i) for i in var_counties[1:-1]]
+    # load data frames and add proper filters
     preds = pd.read_csv("streamlit/data/pytorch_monthly2021_preds.csv")
     preds = preds[preds["property_type"] == "All Residential"]
     preds["diff"] = preds["diff"] / preds["target"]
+    preds = preds[preds["county_fips"].isin(var)]
 
     st.header("Temporal Fusion Transformer")
     st.write(
