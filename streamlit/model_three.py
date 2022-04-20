@@ -18,7 +18,6 @@ def pytorch_writeup():
     ) as response:
         counties = json.load(response)
 
-    # TODO: filter the dataframe to "all residential"
     preds = pd.read_csv("streamlit/data/pytorch_monthly2021_preds.csv")
     preds = preds[preds["property_type"] == "All Residential"]
 
@@ -27,6 +26,7 @@ def pytorch_writeup():
     st.write("Intro Text")
 
     # TODO: Overview of tft
+    st.write("Overview of the TFT transformer")
     ##############################################################
 
     st.write("Below is the histogram of residual error")
@@ -84,9 +84,10 @@ def pytorch_writeup():
 
     ###############################################################
     # TODO: 2022 predictions if time permits
-
+    # PITA to get predictions from this model -  docs not clear at all
     ###############################################################
     # TODO: Conclusion of the model
+    st.write("Conclusion...")
 
     ###############################################################
     # TODO: References
