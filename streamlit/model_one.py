@@ -18,7 +18,7 @@ def model1():
     
     st.write("We wanted to explore tree regression models because of their capabilities with diverse input data. This family of models handles the variety of scale in our data well. We were able to utilize all data sources including demographic data from the ACS. ")
 
-    st.write("The use of ACS data limits the counties available to those with populations > 65,000. In order to compare to the VAR model (model 2) which uses monthly data, we are also limited to counties with monthly Redfin data. The final count of U.S. counties used in this model is 613.")
+    st.write("The use of ACS data limits the counties available to those with populations > 65,000. In order to compare to the VAR model (time series) which uses monthly data, we are also limited to counties with monthly Redfin data. The final count of U.S. counties used in this model is 613.")
     
     st.write("Using PyCaret AutoML we isolated two top-performing model types on our data: Random Forest Regressor and Extra Trees Regressor. We then further tuned these models outside of PyCaret through gridsearch. Ultimately the Extra Trees Regressor performed best and we selected it as our top tree model.")
 
@@ -139,7 +139,7 @@ def model1():
     st.write("""Future work:
              
 *  As years go by the availability of demographic data will increase. This model clearly shows the importance of some of these features. Even if we could not gather current demographic data, with a longer history we could build a regression model to predict more than 1 year ahead, making predictions into the future possible. This would be a useful tool for investors and individuals in the market for a home.
-*  Incorporate ensemble models to boost prediction strength.
+*  Given more time, we would have investigated ensemble models to boost prediction strength.
 
                  
               """) 
