@@ -307,6 +307,12 @@ def pytorch_writeup():
     st.plotly_chart(pred_error, use_container_width=True)
 
     ###############################################################
+    st.write(
+        """As we can see below, the increases at the top end of the model are highly
+    unrealistic even in a strong market. It should be noted that most of these projections
+    were made in areas that normally have property values under 100k."""
+    )
+
     # TODO: display 2020 top 10 predictions
     preds2020 = pd.read_csv("streamlit/data/tft_top10_2020.csv")
     top10table = go.Figure(
