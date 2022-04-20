@@ -117,6 +117,7 @@ if choice == "Neural Network":
     deep neural network designed with an attention mechanism to allow it to refer
     back to long term dependencies."""
     )
+    # display text for post/analysis
     pytorch_writeup()
 
 if choice == "Conclusion":
