@@ -104,7 +104,7 @@ def model1():
 
     summary2020prediction = pd.DataFrame({'County': ['Athens County, OH', 'Gloucester County, NJ', 'Camden County, NJ',
                                     'Burlington County, NJ', 'Mercer County, NJ', 'Sussex County, NJ', 'Cumberland County, NJ',
-                                    'Coryell County, TX'], '2020 Price % increase over 2019': [143,123,99,85,74,71,65,59]})
+                                    'Coryell County, TX'], '2020 Price % increase over 2019': [143.12,123.73,99.47,85.36,74.21,71.90,65.11,59.37]})
 
 
 
