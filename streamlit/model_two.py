@@ -85,7 +85,7 @@ def model2():
               """)
               
     st.write("""
-             Now we are ready for modeling.  The VAR model accepts a few important parameters<sup>1</sup> specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
+             Now we are ready for modeling.  The VAR model accepts a few important (parameters<sup>1</sup>), specifically max_lags and frequency.  We set the frequency to monthly to reflect our data and the max_lags to 12.  We tested a few different models with different max_lags but 12 returned the best results.
              
              
               """) 
