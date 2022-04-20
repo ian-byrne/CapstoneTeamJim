@@ -93,6 +93,17 @@ def conclusion():
     
     top10table.update_layout(width=1000, height=700)
     st.plotly_chart(top10table,use_container_width=True) 
+   
+   
+    st.write("""It's interesting to see that the top 10 counties are all showing a >60% increase over 2021, with Hardin County, Ohio showing double that.  """)
+      
+    st.write("""Mosaic Experian reports provide detailed personality profiles for the typical residents of Hardin County.  The top 3 profiles are **Family Union, Families in Motion, and Singles and Starters**, and make up approximately 78% of households. Most of the households within these profiles are young families or young people starting to build their independent lives, with a high majority of the households as homeowners.
+    
+    With proximity to both Columbus and Dayton, Hardin County is also great choice for more affordable housing within commuting distance.
+    
+    """)
+      
+     
     
     
     st.subheader("Future Work")
