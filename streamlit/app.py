@@ -124,6 +124,6 @@ if choice == "Neural Network":
 if choice == "Conclusion":
     st.header("Conclusion")
     st.write(
-        "Based on a comparison on the metrics between the models, the time series model performed the best **(assumption - need to validate against NN model results)"
+        "Based on a comparison on the metrics between the models, the time series model performed the best."
     )
     conclusion()
