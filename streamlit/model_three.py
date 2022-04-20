@@ -50,7 +50,9 @@ def pytorch_writeup():
     query, key, value system, the model is able to look back at specific variables and
     their positional encoding. This is not unlike a query, key, and value in the sense
     of a database, where one would have a question, the question would then match a key,
-    and that value would be what the model paid attention to for that iteration."""
+    and that value would be what the model paid attention to for that iteration. This
+    structure also allows for parallelization which is not available in an RNN or LSTM.
+    """
     )
     ##############################################################
     st.subheader("Data selection")
