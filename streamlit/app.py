@@ -20,7 +20,7 @@ st.warning(
 )  # TODO: remove before final production version.
 
 st.title("Capstone Project Team JIM")
-st.write("**Authors:** Jenny Ney, Melanie Starr, Ian Byrne")
+st.write("**Authors:** Jenny Ney, Ian Byrne, Melanie Starr")
 
 menu = ["Home", "Supervised", "Time Series", "Neural Network", "Conclusion"]
 choice = st.sidebar.selectbox("Menu", menu)
@@ -28,13 +28,13 @@ choice = st.sidebar.selectbox("Menu", menu)
 if choice == "Home":
     st.subheader("About:")
     st.write(
-        """With this app the authors indend to the user to be able to follow along
+        """With this app the authors indend for the user to be able to follow along
         with design choices made in each model and view our results.
     """
     )
     st.write(
         """
-    Welcome to the **Real Estate investment region analysis Capstone Project** for our Master of
+    Welcome to the **Real Estate Investment Region Analysis Capstone Project** for our Master of
     Applied Data Science from the University of Michigan School of Information!
                """
     )
@@ -51,7 +51,7 @@ if choice == "Home":
 
     In preparation for and during the early stages of the project, we identified open
     source data that would help us potentially make predictions on county home values.
-    We ended up using the following resources in some form or another during the
+    The following resources were used, in some form or another, during the
     project:
                 """
     )
@@ -70,7 +70,7 @@ if choice == "Home":
     st.write(
         """
     These data sources were originally stored in a Postgres database, however depending
-    on when you are viewing this, that database may or may not be available. All data
+    on when you are viewing this, that database may or may not be available.  All data
     used within the final models of the project presented here can be found in the
     github repository https://github.com/ian-byrne/CapstoneTeamJim
         """
@@ -80,10 +80,8 @@ if choice == "Home":
     #### Project:
 
     We each selected a model type that interested us and proved to test well on our
-    preliminary data. This led to a time series Vector Autoregression (VAR) model, a supervised ExtraTreesRegressor model, and neural network Transformer model being used in the project.
-    We looked at several targets for each region, honing in on median sale price.As you will see, some models did better or worse depending on the target metric and the time granularity. In preparation for and in the early stages
-    of the project, we identified open source data that would help us potentially
-    make predictions on county home values.
+    preliminary data. This led to a time series Vector Autoregression (VAR) model, a supervised ExtraTreesRegressor model, and a neural network Transformer model being used in the project.  
+    We looked at several targets for each region, and concluded that median sale price would be our final prediction target as it's more intuitive for the end user to understand.  As you will see, some models did better or worse depending on the target metric and the time granularity. 
 
     """
     )
