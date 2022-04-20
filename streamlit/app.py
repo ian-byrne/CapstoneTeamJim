@@ -16,7 +16,7 @@ from conclusion import conclusion
 
 
 st.warning(
-    "This analysis is for a Capstone project and the result have not been vetted by a licensed professional.  Please invest responsibly."
+    "This analysis is for a Capstone project and the results have not been vetted by a licensed professional.  Please invest responsibly."
 )  # TODO: remove before final production version.
 
 st.title("Capstone Project Team JIM")
