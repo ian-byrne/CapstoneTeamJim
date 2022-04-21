@@ -40,20 +40,20 @@ def pytorch_writeup():
      for multi horizon predictions. This seemed to be a great model candidate due to the
      recent results that it has produced against other cutting edge time series
      prediction models. With the datasets used by the authors, they improved results by
-     between 3% and 26% over the next best alternative ([Lim et al., 2019](https://arxiv.org/pdf/1912.09363.pdf))"""
+     between 3% and 26% over the next best alternative ([Lim et al., 2019](https://arxiv.org/pdf/1912.09363.pdf))."""
     )
 
     st.write(
         """
     The benefit of using a transformer style architecture with sequential data is its
-    ability to reference much earlier period or words in a sequence without the overhead
+    ability to reference much earlier periods or words in a sequence without the overhead
     that a typical RNN or LSTM network would have. While both of those models can look
     back at older values, as the data sequence becomes longer those references can get
     “watered down” and add significant computing cost. The transformer avoids this by
     using what is called attention, an architecture introduced in 2017 with the seminal
     paper “Attention is all you need” from Google Research ([Vaswani et al., 2017](https://arxiv.org/pdf/1706.03762.pdf)). Attention can be
     boiled down to “what part of the input sequence should the model focus on.” Using a
-    query, key, value system, the model is able to look back at specific variables and
+    query, key, and value system, the model is able to look back at specific variables and
     their positional encoding. This is not unlike a query, key, and value in the sense
     of a database, where one would have a question, the question would then match a key,
     and that value would be what the model paid attention to for that iteration. This

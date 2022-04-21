@@ -28,7 +28,7 @@ choice = st.sidebar.selectbox("Menu", menu)
 if choice == "Home":
     st.subheader("About:")
     st.write(
-        """With this app the authors indend for the user to be able to follow along
+        """With this app the authors intend for the user to be able to follow along
         with design choices made in each model and view our results.
     """
     )
@@ -88,11 +88,14 @@ if choice == "Home":
     with st.expander("Project Requirements"):
         st.write(
             """
+        - `matplotlib==3.5.1`
+        - `pandas>=1.4.1,<=1.4.2`
         - `pytorch-lightning==1.6.0`
         - `pytorch-forecasting==0.10.1`
         - `plotly>=5.6.0,<=5.7.0`
         - `seaborn==0.11.2`
-        """  # TODO: Add other packages if needed - seaborn
+        - `sklearn==0.0`
+        """  
         )
 
 if choice == "Supervised":
@@ -113,7 +116,7 @@ if choice == "Neural Network":
     st.header("Neural Network")
     st.write(
         """
-    Modeled using the the Temporal Fusion Transformer architecture.This is a form of
+    Modeled using the Temporal Fusion Transformer architecture. This is a form of
     deep neural network designed with an attention mechanism to allow it to refer
     back to long term dependencies."""
     )

@@ -21,7 +21,7 @@ def model2():
         
         
     st.write("""
-             Vector Autoregression (VAR) is a multivariate time series model that extracts the relationship between datasets over time.  In this project, we explore the relationship between median sales prices between U.S. counties over time.  How does the median sales price for county X influence its neighboring county Y?  Being able to establish the relationship between the counties, we are able to use this information to support the prediction of future median sales prices vs. a univariate time series model that would predict the sale price by county on its own.
+             Vector Autoregression (VAR) is a multivariate time series model that extracts the relationship between datasets over time.  In this project, we explore the relationship between median sale prices between U.S. counties over time.  How does the median sale price for county X influence its neighboring county Y?  Being able to establish the relationship between the counties, we are able to use this information to support the prediction of future median sale price vs. a univariate time series model that would predict the sale price by county on its own.
             
             
             """)
@@ -39,14 +39,14 @@ def model2():
               """)     
 
     st.write("""
-             In order to compare the results between models we need to ensure that we are using the same counties.  Since ACS demographic data contains data at the county level for county populations > 65,000 we need to find the subset of counties that are available between both datasets.  This reduces the final dataset to 613 U.S. counties.
+             In order to compare the results between models we need to ensure that we are using the same counties.  Since ACS demographic data contains data at the county level for populations > 65,000 we need to find the subset of counties that are available between both datasets.  This reduces the final dataset to 613 U.S. counties.
    
              
               """) 
 
 
     st.write("""
-             As we still have missing data, we do a forward fill at the county level.  This will ensure that the median sales price trend for the missing months remains constant based on the previous month.  Finally, we do a log transform on the median sales price.  We use a log transformation to remove the skew of the data as there is quite a variance between sale prices in different areas.
+             As we still have missing data, we do a forward fill at the county level.  This will ensure that the median sale price trend for the missing months remains constant based on the previous month.  Finally, we do a log transform on the median sale price.  We use a log transformation to remove the skew of the data as there is quite a variance between sale price in different areas.
              
              
               """) 
@@ -64,7 +64,7 @@ def model2():
 
 
 
-    st.image("streamlit/data/model_2_df.png", caption="Dataset showig the first year of values", width=None, use_column_width=True, clamp=False, channels="RGB", output_format="auto")
+    st.image("streamlit/data/model_2_df.png", caption="Dataset showing the first year of values", width=None, use_column_width=True, clamp=False, channels="RGB", output_format="auto")
 
 
     st.write(""" #           
@@ -72,7 +72,7 @@ def model2():
               """)  
               
     st.write("""
-             We can test if the sales price of county X has a causal relationship with county Y’s sale price by performing the Granger Causality test.  This test is another statistical test that returns a p-value to test the null hypothesis that there is no relationship between the series.  If the p-value is less than 0.05 we reject the null hypothesis to conclude that county X has a causal relationship with county Y.  As we performed this test on 1393 different counties, it took over 4 hours to run and the results did return several causal relationships.
+             We can test if the sale price of county X has a causal relationship with county Y’s sale price by performing the Granger Causality test.  This test is another statistical test that returns a p-value to test the null hypothesis that there is no relationship between the series.  If the p-value is less than 0.05 we reject the null hypothesis to conclude that county X has a causal relationship with county Y.  As we performed this test on 1393 different counties, it took over 4 hours to run and the results did return several causal relationships.
              
              
               """) 
@@ -149,7 +149,7 @@ forecasts = var_res.forecast(df_2diff_log.values,steps=num_forecasts)
 
     st.write("""This chart provides the following information:  
              
-*  The cluster is towards the middle of the plot and it’s symmetrical about the 0 axis    
+*  The cluster is towards the middle of the plot and is symmetrical about the y axis    
 *  The cluster is condensed and not spread out across the y axis   
 *  There are no clear patterns  
 
@@ -270,7 +270,7 @@ This tells us that the model is learning very well.
     
     
     st.header("Top 10 Counties from VAR model  :clock10:")
-    st.write("Below is the top 10 predicted counties for model comparison")
+    st.write("Below are the top 10 predicted counties for model comparison:")
     
     
     

@@ -24,7 +24,7 @@ def model1():
 
     st.write("We split our data into train, test, and validation. Because the data is yearly we withheld all of 2019 (predicting 2020 median sale price) as validation. Training data comprised 75% of the remaining years with the remainder to test.")
 
-    st.write("Our first iteration of this model yielded extremely strong results with a test R2 of 0.973 and validation R2 of 0.951. Such high scores were somewhat suspect and further explained by examining the features importances:")
+    st.write("Our first iteration of this model yielded extremely strong results with a test R squared of 0.973 and validation R squared of 0.951. Such high scores were somewhat suspect and further explained by examining the features importances:")
 
     feature_df1 = pd.read_csv("streamlit/data/tree_model1_features.csv")
 
@@ -44,7 +44,7 @@ def model1():
 
     st.pyplot(fig, use_container_width=True)
 
-    st.write("For our final iteration of this model type we removed the four highly correlated features and ran the model with the remaining features. We still found highly favorable results with a test R2 of 0.92 and 2019 validation data R2 of 0.829. The RMSE (a measure of the standard deviation of residuals) for 2019 predicting 2020 with this model is $66,606.")
+    st.write("For our final iteration of this model type we removed the four highly correlated features and ran the model with the remaining features. We still found highly favorable results with a test R squared of 0.92 and 2019 validation data R squared of 0.829. The RMSE (a measure of the standard deviation of residuals) for 2019 predicting 2020 with this model is $66,606.")
 
     st.write("The feature importances show much different results in this iteration:")
 
@@ -56,7 +56,7 @@ def model1():
 
     st.plotly_chart(fig,use_container_width=True)
 
-    st.write("Some of the top features include tax and debt data. These are at the state level. Some of the county-level demographic data also shows up here. Education levels in particular can predict higher home sales. Average sale to list is a measure of time on the market.")
+    st.write("Some of the top features include tax and debt data. These are at the state level. Some of the county-level demographic data also shows up here. Education levels in particular can predict higher home sales. Average sale to list, another top feature, is a measure of time on the market.")
 
     st.write("A plot of counties along with the predicted and real values in 2020 is shown below:")
 
@@ -130,8 +130,8 @@ def model1():
     st.write("""Some drawbacks of this model are: 
              
 *  Time limitations. Because demographic data is only available from 2015-2019 at the county level we cannot make longer predictions or predict into the future.
-*  Granularity: county level is the smallest available location type available across this dataset.
-*  Lack of monthly data availability, unlike the other two models. This is due to data availability of ACS demographic data.
+*  Granularity. County level is the smallest location type across this dataset.
+*  Lack of monthly data, unlike the other two models. This is due to data granularity of ACS demographic data.
 *  Feature importances are all positive, meaning we cannot discern whether a feature has a negative or positive correlation with the outcome variable.
                  
               """) 
@@ -147,7 +147,7 @@ def model1():
         st.write(
             """
         - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html
-        """  # TODO: Add other packages if needed
+        """  
         )
 
 
