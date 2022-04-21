@@ -20,11 +20,15 @@ from pytorch_forecasting import (
 from pytorch_forecasting.data import TimeSeriesDataSet, GroupNormalizer, NaNLabelEncoder
 from sklearn.metrics import mean_squared_error
 import torch
+import os
 
 # standard imports
 import numpy as np
 import pandas as pd
 import argparse
+from config import definitions
+
+root_dir = definitions.root_directory()
 
 # TODO: ensure the correct paths are being used here once the final model is done.
 def load_data(granularity="year"):
@@ -47,7 +51,10 @@ def load_data(granularity="year"):
     if granularity == "year":
         try:
             print("Loading yearly data...")
-            data = pd.read_pickle("data/fulldataset.pkl")
+            path = os.path.join(
+                root_dir, "CapstoneTeamJim", "data", "processed", "fulldataset.pkl"
+            )
+            data = pd.read_pickle(path)
             data["year"] = pd.to_datetime(data["year"], format="%Y")
 
             # columns to drop
