@@ -69,7 +69,7 @@ def pytorch_writeup():
     state, and U.S. state corporate and personal income tax rates. The year over
     year and month over month calculations have been dropped from the monthly model
     Redfin data as the neural network should be able to identify these relationships
-    without being explicitly told. All of these data points combined allowed for the
+    without being explicitly told. The transformer architecture thrives on having more data to work with. All of these data points combined allowed for the
     data to begin in 2012 and run through the end of 2021. A version of the model was also run on data spanning
     2012-2020 to stay consistent with the other two models in the project, the results of which are shown below. In order to avoid
     potential data leakage, median sale price per square foot was removed as it very
