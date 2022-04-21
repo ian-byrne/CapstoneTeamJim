@@ -219,22 +219,22 @@ def pytorch_writeup():
     res_v_base_yr = pd.DataFrame(
         {
             "Metric": ["MAE", "RMSE", "R^2"],
-            "Model": [41443.996, 98713.62, 0.729],
-            "Baseline": [59424.094, 113088.3, 0.645],
+            "Model": ['$41,444', '$98,714', 0.729],
+            "Baseline": ['$59,424', '$113,088', 0.645],
         }
     )
     res_v_base_mo = pd.DataFrame(
         {
             "Metric": ["MAE", "RMSE", "R^2"],
-            "Model": [42026.887, 115940.914, 0.787],
-            "Baseline": [54858.941, 159162.2, 0.599],
+            "Model": ['$42,027', '$115,941', 0.787],
+            "Baseline": ['$54,859', '$159,162', 0.599],
         }
     )
 
     st.write(
         """The [Baseline](https://pytorch-forecasting.readthedocs.io/en/latest/api/pytorch_forecasting.models.baseline.Baseline.html) model that we compare against in these tables simply
     takes the last observed value of the target and repeats it for however many periods
-    it is to forecast out to. Below is a table of how the model scored using the yearly data"""
+    it is to forecast out to. Below is a table of how the model scored using the yearly data."""
     )
 
     yearly_scores = go.Figure(
@@ -267,7 +267,7 @@ def pytorch_writeup():
     yearly_scores.update_layout(height=400)
     st.plotly_chart(yearly_scores, use_container_width=True)
 
-    st.write("Below is a table of how the model scored using the monthly data")
+    st.write("Below is a table of how the model scored using the monthly data.")
 
     monthly_scores = go.Figure(
         data=[
@@ -319,7 +319,7 @@ def pytorch_writeup():
     st.write(
         """As we can see below, the increases at the top end of the model are highly
     unrealistic even in a strong market. It should be noted that most of these projections
-    were made in areas that normally have property values under 100k from what we see in
+    were made in areas that normally have property values under $100,000 from what we see in
     our data sets."""
     )
 
@@ -358,12 +358,9 @@ def pytorch_writeup():
         """As we see above, the model can score well depending on the county, but
     the overall scores are lackluster compared to the previous two models used in this
     project. Due to the architecture of transformers and neural networks in
-    general, the model would likely perform better if it had more data to train on. By that I
-    mean both more years and months to train on, including some recessions and more varied
+    general, the model would likely perform better if it had more data to train on. This could mean more years and months to train on, including some recessions and more varied
     pricing periods, as well as more social data such as when lockdowns occurred in each state.
-    Large shifts in housing prices were observed once covid lockdowns began which makes
-    sense since people were stuck inside all the time and put more thought into their
-    home and immediate surroundings. These results can also act as a reminder that sometimes a
+    Large shifts in housing prices were observed once covid lockdowns began. These results can also act as a reminder that sometimes a
     complicated neural network is not the right choice to solve the problem at hand and that
     simpler models can be better."""
     )

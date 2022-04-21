@@ -95,7 +95,7 @@ def conclusion():
     st.plotly_chart(top10table,use_container_width=True) 
    
    
-    st.write("""It's interesting to see that the top 10 counties are all showing a >60% increase over 2021, with Hardin County, Ohio showing double that.  """)
+    st.write("""It's interesting to see that the top 10 counties are all showing a >60% increase over 2021, with Hardin County, OH showing double that.  """)
       
     st.write("""Mosaic Experian reports (reference 1) provide detailed personality profiles for the typical residents of Hardin County.  The top 3 profiles are **Family Union, Families in Motion, and Singles and Starters**, and make up approximately 78% of households. Most of the households within these profiles are young families or young people starting to build their independent lives, with a high majority of the households as homeowners.  With proximity to both Columbus and Toledo, Hardin County is also great choice for more affordable housing within commuting distance.
     
@@ -108,7 +108,7 @@ def conclusion():
     st.write("""Future work on this analysis could include the following ideas:  
              
 *  It would be interesting to see how this model performs on the remaining U.S. counties, as well as performing a similar analysis on Canadian/International markets.  
-*  Increase the granularity of the results to be able to identify sub-regions within the counties that are predicting to have higher returns.  This would require the input data to be higher granularity as well.
+*  Increase the granularity of the results to be able to identify sub-regions within the counties that are predicted to have higher returns.  This would require the input data to be higher granularity as well.
 *  Combine or augment the models to bring more local features, like Yelp rating trends and U-haul rental trends.  
 *  Investigate the impact of inflation.
  
