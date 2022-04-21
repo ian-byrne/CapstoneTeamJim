@@ -26,7 +26,7 @@ project:
   
 These data sources were originally stored in a Postgres database, however depending
 on when you are viewing this, that database may or may not be available. All data
-used within the final models of the project presented here can be found in this github repository and our [Google drive](https://drive.google.com/file/d/1BwXfHoRVx37aIbWZynjwH4fLo7ue90nP/view?usp=sharing)
+used within the final models of the project presented here can be found in this github repository and our [Google drive](https://drive.google.com/file/d/1BwXfHoRVx37aIbWZynjwH4fLo7ue90nP/view?usp=sharing).
 
 
 ## **Project**:
