@@ -70,7 +70,7 @@ def pytorch_writeup():
     year and month over month calculations have been dropped from the monthly model
     Redfin data as the neural network should be able to identify these relationships
     without being explicitly told. All of these data points combined allowed for the
-    data to begin in 2012 and run through the end of 2021. The transformer architecture thrives on having more data to work with, hence why I chose to go through 2021. A version of the model was also run on data spanning
+    data to begin in 2012 and run through the end of 2021. The transformer architecture thrives on having more data to work with, hence why we chose to go through 2021. A version of the model was also run on data spanning
     2012-2020 to stay consistent with the other two models in the project, the results of which are shown below. In order to avoid
     potential data leakage, median sale price per square foot was removed as it very
     highly correlated to the target variable of median sale price. Both the yearly
@@ -137,10 +137,10 @@ def pytorch_writeup():
     st.code(code, language="python")
 
     st.write(
-        """Data points that do not change, such as property type or region are
+        """Data points that do not change, such as property type or region, are
         classified as static categoricals. Year and time_idx are both categorized as
         time varying real numbers along with the tax data. Classifying tax rates as a
-        ime varying known number makes sense due to the fact that when they do change,
+        time varying known number makes sense due to the fact that when they do change,
         they are generally voted on and known beforehand."""
     )
     ##############################################################
@@ -150,7 +150,7 @@ def pytorch_writeup():
         Pytorch-forecasting has an integration with a package called [Optuna](https://optuna.org/) that can
         run studies to find the optimal hyperparameters for a specified model. This can
         be thought of as similar to grid search from sklearn. When running this for the
-        monthly data, this took just under three hours on my laptop. The study for the
+        monthly data, it took just under three hours. The study for the
         yearly data took under one hour. The following parameters were searched:
         gradient clip, hidden size, dropout, hidden continuous size, attention head
         size, and learning rate. """
@@ -177,17 +177,25 @@ def pytorch_writeup():
         """The exact values listed above were not what was used as there was some manual
         tuning done afterwards. It is essential to have manual control over parameters in any neural network.
         For the 2020 predictions presented at the end of this page, monthly data granularity
-        was used with the same hyper parameters used in the 2021 model training. """
+        was used with the same hyperparameters used in the 2021 model training. """
     )
     ##############################################################
     st.subheader("Errors")
     st.write(
         """Below is the histogram of residual error,  as we can see, the
-    majority of the errors are between 0 and 10% below the actual target price. The model
+    majority of the errors are between 0% and 10% below the actual target price. The model
     has developed a bias to predict on the low side of the target."""
     )
 
-    hist = px.histogram(preds["diff"], title="Residual Error of Model")
+    ##hist = px.histogram(preds["diff"], title="Residual Error of Model")
+
+    hist = px.histogram(preds['diff'],
+                        title='Histogram of Residual Error of Model',
+                        labels={"value": "Prediction Errors"},
+                        color_discrete_map={"diff": "#3366CC"},
+                        template = "plotly_white"
+                        )
+    hist.update_layout(showlegend=False)
 
     st.plotly_chart(hist, use_container_width=True)
 
@@ -206,7 +214,7 @@ def pytorch_writeup():
     st.plotly_chart(pred_errors, use_container_width=True)
 
     ###############################################################
-    st.subheader("Results with using 2021 as test data.")
+    st.subheader("Results using 2021 as test data.")
 
     res_v_base_yr = pd.DataFrame(
         {
