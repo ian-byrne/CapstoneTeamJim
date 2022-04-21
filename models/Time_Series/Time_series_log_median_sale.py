@@ -59,33 +59,12 @@ def time_series():
     df_time_log = df_time.pivot(index='date',columns='county_fips',values='log_median_sale_price')
     
 
-    # def adfuller_func(dataframe):
-    #     res = []
-    #     for col in list(dataframe.columns):
-    #         r = adfuller(dataframe[col], autolag='AIC')
-    #         res.append(round(r[1],3))
-    #     return res
-    
-    
-    # check stationarity with ad fuller testing - no differencing
-    # no_diff = adfuller_func(df_time_log)
-    # adf = pd.DataFrame(data=[no_diff],columns=list(df_time_log.columns))
-    # adf = adf.melt()
-    # adf.columns=['county_fips','no_diff_p']
-    # adf[adf['no_diff_p']<0.05].count()
-    # 451/1393 are stationary
-    
+       
     # check stationarity with ad fuller testing - first differencing
     df_time_diff_log = df_time_log.diff().dropna()
-    # first_diff = adfuller_func(df_time_diff_log)
-    # adf['first_diff_p'] = first_diff 
-    # adf[adf['first_diff_p']<0.05].count()
     # 1348/1393 are stationary
     
     df_time_2diff_log = df_time_diff_log.diff().dropna()
-    # sec_diff = adfuller_func(df_time_2diff_log)
-    # adf['sec_diff_p'] = sec_diff 
-    # adf[adf['sec_diff_p']<0.05].count()
     # 1390/1393 are stationary
     
     
