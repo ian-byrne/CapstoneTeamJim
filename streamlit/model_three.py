@@ -70,7 +70,7 @@ def pytorch_writeup():
     year and month over month calculations have been dropped from the monthly model
     Redfin data as the neural network should be able to identify these relationships
     without being explicitly told. All of these data points combined allowed for the
-    data to begin in 2012 and run through the end of 2021. The transformer architecture thrives on having more data to work with hance why I chose to go through 2021. A version of the model was also run on data spanning
+    data to begin in 2012 and run through the end of 2021. The transformer architecture thrives on having more data to work with, hence why I chose to go through 2021. A version of the model was also run on data spanning
     2012-2020 to stay consistent with the other two models in the project, the results of which are shown below. In order to avoid
     potential data leakage, median sale price per square foot was removed as it very
     highly correlated to the target variable of median sale price. Both the yearly
