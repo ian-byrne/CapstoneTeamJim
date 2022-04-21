@@ -114,6 +114,14 @@ def conclusion():
  
                  
               """) 
+
+    st.subheader("Team Member Contributions:")
+
+    st.write("""
+* Melanie: data gathering and cleaning, lead on Time Series, visualization template creation, scripts and repo work
+* Ian: database setup, lead on Neural Network, Streamlit setup, scripts and repo work
+* Jenny: project idea, data gathering and cleaning, lead on Supervised ML, scripts and repo work""")
+
     with st.expander("References"):
         st.write(
             """
