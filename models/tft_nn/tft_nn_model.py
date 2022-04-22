@@ -385,7 +385,7 @@ def train_model(granularity, data):
     return best_tft
 
 
-def main(granularity, pred_period):
+def main(granularity):
     """Run the model with desired parameters."""
     data = load_data(granularity)
     train_model(granularity, data)
